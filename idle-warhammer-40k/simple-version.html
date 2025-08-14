@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IdleWarhammer40k - Simple Version</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+            color: white;
+        }
+        
+        .game-container {
+            background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+            border: 2px solid #d4af37;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+        
+        .unit-card {
+            background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+            border: 1px solid #d4af37;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .health-bar {
+            background: linear-gradient(90deg, #dc2626 0%, #ea580c 50%, #16a34a 100%);
+            height: 4px;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        @keyframes pulse-gold {
+            0%, 100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.8); }
+        }
+        
+        .pulse-gold {
+            animation: pulse-gold 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // Game State
+        let gameState = {
+            playerUnits: [],
+            enemyUnits: [],
+            resources: {
+                credits: 1000,
+                materials: 500,
+                experience: 0
+            },
+            gameTime: 0,
+            nextReinforcement: Date.now() + 60000, // 1 minute
+            nextAttack: Date.now() + 10000, // 10 seconds
+            lastUpdate: Date.now()
+        };
+
+        // Unit Templates
+        const SPACE_MARINE_UNITS = [
+            { name: 'Tactical Marine', health: 100, maxHealth: 100, attack: 15, defense: 10, speed: 5, range: 3 },
+            { name: 'Assault Marine', health: 120, maxHealth: 120, attack: 20, defense: 8, speed: 8, range: 1 },
+            { name: 'Devastator Marine', health: 90, maxHealth: 90, attack: 25, defense: 12, speed: 3, range: 6 }
+        ];
+
+        const ORK_UNITS = [
+            { name: 'Ork Boy', health: 80, maxHealth: 80, attack: 12, defense: 6, speed: 4, range: 1 },
+            { name: 'Nob', health: 120, maxHealth: 120, attack: 18, defense: 10, speed: 5, range: 1 },
+            { name: 'Loota', health: 70, maxHealth: 70, attack: 25, defense: 4, speed: 3, range: 5 }
+        ];
+
+        // Utility Functions
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function createUnit(template, faction) {
+            return {
+                id: generateId(),
+                name: template.name,
+                faction: faction,
+                health: template.health,
+                maxHealth: template.maxHealth,
+                attack: template.attack,
+                defense: template.defense,
+                speed: template.speed,
+                range: template.range,
+                level: 1,
+                experience: 0,
+                isAlive: true,
+                position: { x: randomInt(50, 750), y: randomInt(50, 550) }
+            };
+        }
+
+        // Game Logic
+        function updateGame() {
+            const currentTime = Date.now();
+            const deltaTime = currentTime - gameState.lastUpdate;
+            gameState.gameTime += deltaTime;
+            gameState.lastUpdate = currentTime;
+
+            // Check for reinforcements
+            if (currentTime >= gameState.nextReinforcement) {
+                if (gameState.playerUnits.length < 50) {
+                    const randomUnit = SPACE_MARINE_UNITS[randomInt(0, SPACE_MARINE_UNITS.length - 1)];
+                    gameState.playerUnits.push(createUnit(randomUnit, 'space-marines'));
+                }
+                gameState.nextReinforcement = currentTime + 60000;
+            }
+
+            // Check for enemy attacks
+            if (currentTime >= gameState.nextAttack) {
+                const numEnemies = randomInt(1, 3);
+                for (let i = 0; i < numEnemies; i++) {
+                    const randomUnit = ORK_UNITS[randomInt(0, ORK_UNITS.length - 1)];
+                    gameState.enemyUnits.push(createUnit(randomUnit, 'orks'));
+                }
+                gameState.nextAttack = currentTime + 10000;
+            }
+
+            // Process combat
+            processCombat();
+
+            // Remove dead units
+            gameState.playerUnits = gameState.playerUnits.filter(unit => unit.health > 0);
+            gameState.enemyUnits = gameState.enemyUnits.filter(unit => unit.health > 0);
+
+            // Save game
+            localStorage.setItem('idleWarhammer40k_save', JSON.stringify(gameState));
+        }
+
+        function processCombat() {
+            // Simple combat: each unit attacks a random enemy in range
+            gameState.playerUnits.forEach(playerUnit => {
+                if (playerUnit.health <= 0) return;
+                
+                const nearbyEnemies = gameState.enemyUnits.filter(enemy => 
+                    enemy.health > 0 && 
+                    Math.abs(enemy.position.x - playerUnit.position.x) <= playerUnit.range * 50 &&
+                    Math.abs(enemy.position.y - playerUnit.position.y) <= playerUnit.range * 50
+                );
+
+                if (nearbyEnemies.length > 0) {
+                    const target = nearbyEnemies[randomInt(0, nearbyEnemies.length - 1)];
+                    const damage = Math.max(1, playerUnit.attack - target.defense * 0.5);
+                    target.health = Math.max(0, target.health - damage);
+
+                    if (target.health <= 0) {
+                        gameState.resources.credits += 5;
+                        gameState.resources.materials += 2;
+                        gameState.resources.experience += 10;
+                    }
+                }
+            });
+
+            // Enemy attacks
+            gameState.enemyUnits.forEach(enemyUnit => {
+                if (enemyUnit.health <= 0) return;
+                
+                const nearbyPlayers = gameState.playerUnits.filter(player => 
+                    player.health > 0 && 
+                    Math.abs(player.position.x - enemyUnit.position.x) <= enemyUnit.range * 50 &&
+                    Math.abs(player.position.y - enemyUnit.position.y) <= enemyUnit.range * 50
+                );
+
+                if (nearbyPlayers.length > 0) {
+                    const target = nearbyPlayers[randomInt(0, nearbyPlayers.length - 1)];
+                    const damage = Math.max(1, enemyUnit.attack - target.defense * 0.5);
+                    target.health = Math.max(0, target.health - damage);
+                }
+            });
+        }
+
+        // Load saved game
+        function loadGame() {
+            const saved = localStorage.getItem('idleWarhammer40k_save');
+            if (saved) {
+                try {
+                    gameState = JSON.parse(saved);
+                } catch (e) {
+                    console.error('Failed to load save:', e);
+                }
+            }
+        }
+
+        // React Components
+        function ResourceDisplay({ resources }) {
+            const formatNumber = (num) => {
+                if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+                return num.toString();
+            };
+
+            return (
+                <div className="flex justify-center space-x-8 mb-6">
+                    <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
+                        <span className="text-yellow-400 font-bold">Credits:</span>
+                        <span className="text-white font-mono">{formatNumber(resources.credits)}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+                        <span className="text-blue-400 font-bold">Materials:</span>
+                        <span className="text-white font-mono">{formatNumber(resources.materials)}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+                        <span className="text-green-400 font-bold">Experience:</span>
+                        <span className="text-white font-mono">{formatNumber(resources.experience)}</span>
+                    </div>
+                </div>
+            );
+        }
+
+        function UnitCard({ unit, faction }) {
+            const healthPercentage = (unit.health / unit.maxHealth) * 100;
+            const colors = faction === 'space-marines' 
+                ? { bg: 'bg-blue-700', border: 'border-blue-400', text: 'text-blue-200' }
+                : { bg: 'bg-green-700', border: 'border-green-400', text: 'text-green-200' };
+
+            return (
+                <div className={`unit-card p-3 ${colors.bg} border ${colors.border} rounded mb-3`}>
+                    <div className="flex justify-between items-start mb-2">
+                        <h3 className={`font-bold ${colors.text} text-sm`}>{unit.name}</h3>
+                        <span className="text-xs text-gray-400">Lv.{unit.level}</span>
+                    </div>
+                    
+                    <div className="mb-2">
+                        <div className="flex justify-between text-xs text-gray-300 mb-1">
+                            <span>HP</span>
+                            <span>{unit.health}/{unit.maxHealth}</span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                            <div
+                                className="health-bar h-2 rounded-full"
+                                style={{ width: `${healthPercentage}%` }}
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="flex justify-between">
+                            <span className="text-gray-400">ATK:</span>
+                            <span className="text-red-400 font-mono">{unit.attack}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-gray-400">DEF:</span>
+                            <span className="text-blue-400 font-mono">{unit.defense}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-gray-400">SPD:</span>
+                            <span className="text-green-400 font-mono">{unit.speed}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-gray-400">RNG:</span>
+                            <span className="text-purple-400 font-mono">{unit.range}</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function GameStatus({ playerUnits, enemyUnits, timeUntilReinforcement, timeUntilAttack }) {
+            const formatTime = (milliseconds) => {
+                const seconds = Math.ceil(milliseconds / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                
+                if (minutes > 0) {
+                    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+                }
+                return `${remainingSeconds}s`;
+            };
+
+            return (
+                <div className="bg-gradient-to-r from-gray-800 to-gray-900 p-4 rounded-lg border border-gray-600 mb-6">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div className="space-y-2">
+                            <div className="text-sm text-gray-400">Space Marines</div>
+                            <div className="text-2xl font-bold text-blue-400">{playerUnits.length}</div>
+                        </div>
+                        <div className="space-y-2">
+                            <div className="text-sm text-gray-400">Ork Forces</div>
+                            <div className="text-2xl font-bold text-green-400">{enemyUnits.length}</div>
+                        </div>
+                        <div className="space-y-2">
+                            <div className="text-sm text-gray-400">Next Reinforcement</div>
+                            <div className="text-xl font-bold text-blue-400">{formatTime(timeUntilReinforcement)}</div>
+                        </div>
+                        <div className="space-y-2">
+                            <div className="text-sm text-gray-400">Next Ork Attack</div>
+                            <div className="text-xl font-bold text-green-400">{formatTime(timeUntilAttack)}</div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function MainGame() {
+            const [gameData, setGameData] = React.useState(gameState);
+
+            React.useEffect(() => {
+                loadGame();
+                
+                const gameLoop = setInterval(() => {
+                    updateGame();
+                    setGameData({...gameState});
+                }, 100);
+
+                return () => clearInterval(gameLoop);
+            }, []);
+
+            const timeUntilReinforcement = Math.max(0, gameData.nextReinforcement - Date.now());
+            const timeUntilAttack = Math.max(0, gameData.nextAttack - Date.now());
+
+            return (
+                <div className="game-container p-6 max-w-7xl mx-auto">
+                    <header className="text-center mb-8">
+                        <h1 className="text-4xl font-bold text-yellow-400 mb-2">IdleWarhammer40k</h1>
+                        <p className="text-lg text-gray-300">Space Marines vs Orks - The Eternal Battle</p>
+                    </header>
+
+                    <GameStatus
+                        playerUnits={gameData.playerUnits}
+                        enemyUnits={gameData.enemyUnits}
+                        timeUntilReinforcement={timeUntilReinforcement}
+                        timeUntilAttack={timeUntilAttack}
+                    />
+
+                    <ResourceDisplay resources={gameData.resources} />
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Player Units */}
+                        <div className="lg:col-span-1">
+                            <div className="bg-gradient-to-br from-blue-800 to-blue-900 p-4 rounded-lg border border-blue-500">
+                                <h2 className="text-xl font-bold text-blue-200 mb-4">
+                                    Space Marines ({gameData.playerUnits.length})
+                                </h2>
+                                <div className="space-y-3 max-h-96 overflow-y-auto">
+                                    {gameData.playerUnits.length === 0 ? (
+                                        <p className="text-gray-400 text-center py-8">
+                                            No Space Marines deployed. Reinforcements incoming...
+                                        </p>
+                                    ) : (
+                                        gameData.playerUnits.map(unit => (
+                                            <UnitCard key={unit.id} unit={unit} faction="space-marines" />
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Battlefield */}
+                        <div className="lg:col-span-1">
+                            <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-4 rounded-lg border border-gray-600 min-h-96">
+                                <h2 className="text-xl font-bold text-gray-200 mb-4">Battlefield</h2>
+                                <div className="relative w-full h-80 bg-gradient-to-b from-gray-700 to-gray-800 rounded border border-gray-600 overflow-hidden">
+                                    {gameData.playerUnits.map(unit => (
+                                        <div
+                                            key={unit.id}
+                                            className="absolute w-4 h-4 bg-blue-500 rounded-full border-2 border-blue-300"
+                                            style={{
+                                                left: `${(unit.position.x / 800) * 100}%`,
+                                                top: `${(unit.position.y / 600) * 100}%`,
+                                                transform: 'translate(-50%, -50%)'
+                                            }}
+                                            title={`${unit.name} - HP: ${unit.health}/${unit.maxHealth}`}
+                                        />
+                                    ))}
+                                    {gameData.enemyUnits.map(unit => (
+                                        <div
+                                            key={unit.id}
+                                            className="absolute w-4 h-4 bg-green-500 rounded-full border-2 border-green-300"
+                                            style={{
+                                                left: `${(unit.position.x / 800) * 100}%`,
+                                                top: `${(unit.position.y / 600) * 100}%`,
+                                                transform: 'translate(-50%, -50%)'
+                                            }}
+                                            title={`${unit.name} - HP: ${unit.health}/${unit.maxHealth}`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Enemy Units */}
+                        <div className="lg:col-span-1">
+                            <div className="bg-gradient-to-br from-green-800 to-green-900 p-4 rounded-lg border border-green-500">
+                                <h2 className="text-xl font-bold text-green-200 mb-4">
+                                    Ork Forces ({gameData.enemyUnits.length})
+                                </h2>
+                                <div className="space-y-3 max-h-96 overflow-y-auto">
+                                    {gameData.enemyUnits.length === 0 ? (
+                                        <p className="text-gray-400 text-center py-8">
+                                            No Orks detected. Preparing for next attack...
+                                        </p>
+                                    ) : (
+                                        gameData.enemyUnits.map(unit => (
+                                            <UnitCard key={unit.id} unit={unit} faction="orks" />
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-6 text-center text-sm text-gray-400">
+                        <p>Game Time: {Math.floor(gameData.gameTime / 1000)}s</p>
+                        <p className="mt-2">
+                            Space Marines receive reinforcements every minute. Orks attack every 10 seconds.
+                        </p>
+                    </div>
+                </div>
+            );
+        }
+
+        // Render the app
+        ReactDOM.render(<MainGame />, document.getElementById('root'));
+    </script>
+</body>
+</html> 
