@@ -12,3 +12,5 @@ Create web components library, update it if needed with new components. Use thos
 Instructions how to run application must be placed In README.md and updated accordingly with code updates.
 
 Functionality documentation is kept under docs folder and updated accordingly with code updates.
+
+You dont need to include implementation details in the documentation, focus on the how and why instead.

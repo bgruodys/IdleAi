@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom base styles for the game */
+@layer base {
+  html {
+    font-family: 'Exo 2', sans-serif;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: #0A0A0A;
+    color: #ffffff;
+    overflow-x: hidden;
+  }
+  
+  #root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Custom scrollbar for game theme */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #1C1C1C;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #DAA520;
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #B8860B;
+  }
+}
+
+/* Custom component styles */
+@layer components {
+  .btn-primary {
+    @apply bg-imperial-gold text-void-black font-semibold py-2 px-4 rounded hover:bg-yellow-600 transition-colors;
+  }
+  
+  .btn-secondary {
+    @apply bg-steel-gray text-white font-semibold py-2 px-4 rounded hover:bg-gray-600 transition-colors;
+  }
+  
+  .btn-danger {
+    @apply bg-danger-crimson text-white font-semibold py-2 px-4 rounded hover:bg-red-700 transition-colors;
+  }
+  
+  .panel {
+    @apply bg-charcoal border border-steel-gray rounded-lg p-4;
+  }
+  
+  .heading-primary {
+    @apply font-heading text-imperial-gold uppercase tracking-wider;
+  }
+  
+  .text-glow {
+    text-shadow: 0 0 8px currentColor;
+  }
+}
+
+/* Game-specific utilities */
+@layer utilities {
+  .bg-grid {
+    background-image: 
+      linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}

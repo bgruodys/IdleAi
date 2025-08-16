@@ -70,83 +70,123 @@ npm run preview
 - **Autonomous Combat**: Units move and fight independently
 - **Tactical Depth**: Terrain, formations, and special abilities
 
+## �️ Tech Stack
+
+### Frontend Framework
+- **React 18**: Modern React with Hooks and concurrent features
+- **TypeScript**: Full type safety and developer experience
+- **Vite**: Fast development server and optimized builds
+
+### UI Framework
+- **Material UI v5**: Professional component library with accessibility
+- **Emotion**: CSS-in-JS styling solution
+- **Custom Warhammer 40k Theme**: Dark theme with Imperial Gold accents
+- **Material Icons**: Comprehensive icon library
+
+### State Management
+- **Zustand**: Lightweight state management with TypeScript support
+- **React Context**: Component-level state and theme management
+- **LocalStorage**: Persistent game save data
+
+### Testing
+- **Jest**: JavaScript testing framework
+- **React Testing Library**: Component testing utilities
+- **Testing Library Jest DOM**: Extended matchers for DOM testing
+
+### Code Quality
+- **ESLint**: Code linting with React and TypeScript rules
+- **Prettier**: Code formatting and style consistency
+- **TypeScript**: Static type checking
+│   ├── assets/             # Game Assets
 ## 📁 Project Structure
 
 ```
 IdleWarhammer40k/
 ├── src/
 │   ├── components/          # React Components
-│   │   ├── GameInterface/
-│   │   ├── Battlefield/
-│   │   ├── UI/
-│   │   └── common/
+│   │   ├── GameInterface/   # Main game interface
+│   │   ├── common/          # Material UI component library
+│   │   │   ├── Button.tsx   # Custom button with variants
+│   │   │   ├── ProgressBar.tsx # Progress indicators
+│   │   │   ├── Layout.tsx   # Tabs, panels, cards
+│   │   │   └── index.ts     # Barrel exports
+│   │   └── __tests__/       # Component tests
 │   ├── hooks/              # Custom React Hooks
-│   │   ├── useGameLoop.ts
-│   │   ├── useUnits.ts
-│   │   └── useBattlefield.ts
+│   │   ├── useGameLoop.ts   # Game loop management
+│   │   ├── usePersistence.ts # Save/load functionality
+│   │   └── useTimer.ts      # Timer utilities
 │   ├── stores/             # Zustand Stores
-│   │   ├── gameStore.ts
-│   │   ├── unitsStore.ts
-│   │   └── battlefieldStore.ts
-│   ├── systems/            # Game Logic
-│   │   ├── GameEngine.ts
-│   │   ├── Battlefield.ts
-│   │   └── UnitSystem.ts
+│   │   └── gameStore.ts     # Game state management
 │   ├── types/              # TypeScript Types
-│   │   ├── Unit.ts
-│   │   └── GameState.ts
+│   │   ├── GameState.ts     # Core game types
+│   │   └── index.ts         # Type exports
 │   ├── utils/              # Utilities
-│   │   ├── constants.ts
-│   │   └── saveManager.ts
-│   ├── assets/             # Game Assets
-│   │   ├── sprites/
-│   │   ├── audio/
-│   │   └── data/
-│   └── styles/             # CSS Styles
+│   │   ├── constants.ts     # Game constants
+│   │   ├── mathUtils.ts     # Mathematical functions
+│   │   └── __tests__/       # Utility tests
+│   └── main.tsx            # App entry point with MUI theme
 ├── docs/                   # Documentation
-├── tests/                  # Test Files
-└── build/                  # Production Build
+│   ├── Game-Overview.md
+│   ├── Technical-Specifications.md
+│   ├── Implementation-Roadmap.md
+│   └── Material-UI-Integration.md
+└── public/                 # Static assets
 ```
+
+## 🎨 UI Components Library
+
+The game features a comprehensive Material UI component library with Warhammer 40k theming:
+
+### Available Components
+- **Button**: Multiple variants (primary, secondary, danger, ghost) with loading states
+- **ProgressBar**: Animated progress indicators with labels and color variants  
+- **Panel**: Container components with titles and header actions
+- **Tabs**: Navigation tabs with icons and responsive design
+- **Card**: Interactive cards with hover effects and selection states
+- **StatDisplay**: Chip-based displays for game statistics
+
+### Theme Features
+- **Dark Mode**: Grimdark color scheme with Imperial Gold accents
+- **Typography**: Roboto font family with custom heading styles
+- **Responsive**: Mobile-first design with breakpoint support
+- **Accessibility**: WCAG 2.1 AA compliance with proper ARIA attributes
 
 ## 🛠️ Development
 
-### Technology Stack
-- **Frontend**: React 18 with TypeScript
-- **State Management**: Zustand
-- **Rendering**: HTML5 Canvas
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
-- **Testing**: React Testing Library + Jest + Playwright
-- **Storage**: LocalStorage with IndexedDB fallback
-
 ### Available Scripts
 ```bash
-npm run dev          # Start development server
+npm run dev          # Start development server (http://localhost:3000)
 npm run build        # Create production build
-npm run test         # Run unit tests
-npm run test:e2e     # Run end-to-end tests
-npm run lint         # Check code quality
+npm run test         # Run unit tests with Jest
+npm run type-check   # TypeScript type checking
+npm run lint         # ESLint code quality check
 npm run preview      # Preview production build
 ```
 
-### Code Quality
-- **ESLint**: Enforces coding standards
-- **Prettier**: Code formatting
-- **Jest**: Unit testing (80%+ coverage required)
-- **Playwright**: E2E testing
+### Development Workflow
+1. **Hot Reload**: Instant updates during development
+2. **Type Safety**: Full TypeScript integration with strict checking
+3. **Code Quality**: ESLint + Prettier with pre-commit hooks
+4. **Testing**: Unit tests with React Testing Library
 
 ## 📊 Testing
 
+### Test Coverage
+- **Target Coverage**: 80% minimum for all core systems
+- **Component Tests**: Material UI integration testing
+- **Utility Tests**: Mathematical functions and game logic
+- **Integration Tests**: Store and hook interactions
+
 ### Running Tests
 ```bash
-# Unit tests
-npm run test
+# Run all tests
+npm test
 
-# E2E tests
-npm run test:e2e
+# Watch mode for development
+npm test -- --watch
 
 # Coverage report
-npm run test:coverage
+npm test -- --coverage
 ```
 
 ### Test Coverage Goals
