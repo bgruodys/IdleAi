@@ -7,6 +7,27 @@ export interface PlayerState {
   playTime: number;
   lastLogin: number;
   achievements: string[];
+  username: string;
+}
+
+export interface Unit {
+  id: string;
+  type: string;
+  x: number;
+  y: number;
+  health: number;
+  maxHealth: number;
+  damage: number;
+  speed: number;
+  faction: 'imperial' | 'enemy';
+  isAlive: boolean;
+}
+
+export interface BattlefieldState {
+  width: number;
+  height: number;
+  units: Unit[];
+  enemies: Unit[];
 }
 
 export interface GameTimers {
@@ -14,10 +35,12 @@ export interface GameTimers {
   nextAssault: number;
   lastSave: number;
   gameStarted: number;
+  lastUpdate: number;
 }
 
 export interface GameSettings {
   autoSave: boolean;
+  autoSaveInterval: number;
   soundEnabled: boolean;
   musicEnabled: boolean;
   graphicsQuality: 'low' | 'medium' | 'high';
@@ -30,10 +53,39 @@ export interface GameSettings {
   };
 }
 
+export interface GameStatistics {
+  totalPlayTime: number;
+  unitsLost: number;
+  enemiesKilled: number;
+  defensesWon: number;
+  defensesLost: number;
+}
+
+export enum GameStatus {
+  STOPPED = 'stopped',
+  RUNNING = 'running',
+  PAUSED = 'paused',
+  LOADING = 'loading',
+}
+
+export interface GameConfig {
+  baseReinforcementRate: number;
+  baseRankPointsPerKill: number;
+  rankRequirements: Record<number, number>;
+  maxRank: number;
+  battlefieldSize: { width: number; height: number };
+  autoSaveInterval: number;
+  tickRate: number;
+}
+
 export interface GameState {
+  status: GameStatus;
+  gameTime: number;
   player: PlayerState;
+  battlefield: BattlefieldState;
   timers: GameTimers;
   settings: GameSettings;
+  statistics: GameStatistics;
   isInitialized: boolean;
   isPaused: boolean;
   isBackground: boolean;
