@@ -76,6 +76,12 @@ export interface GameConfig {
   battlefieldSize: { width: number; height: number };
   autoSaveInterval: number;
   tickRate: number;
+  TIMING: {
+    REINFORCEMENT_INTERVAL: number;
+    ASSAULT_INTERVAL: number;
+    GAME_TICK_RATE: number;
+    AUTO_SAVE_INTERVAL: number;
+  };
 }
 
 export interface GameState {

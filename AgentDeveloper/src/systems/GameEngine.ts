@@ -221,7 +221,7 @@ export class GameEngine {
   private processReinforcements(): void {
     if (this.gameState.timers.nextReinforcement <= 0) {
       this.spawnReinforcements();
-      this.gameState.timers.nextReinforcement = 60000; // Reset to 60 seconds
+      this.gameState.timers.nextReinforcement = this.config.TIMING.REINFORCEMENT_INTERVAL;
     }
   }
   

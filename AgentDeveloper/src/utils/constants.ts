@@ -8,7 +8,7 @@ export const GAME_CONFIG = {
   },
   
   TIMING: {
-    REINFORCEMENT_INTERVAL: 60000, // 1 minute in milliseconds
+    REINFORCEMENT_INTERVAL: 10000, // 10 seconds in milliseconds
     ASSAULT_INTERVAL: 3600000, // 1 hour in milliseconds
     GAME_TICK_RATE: 1000, // 1 second
     AUTO_SAVE_INTERVAL: 30000, // 30 seconds

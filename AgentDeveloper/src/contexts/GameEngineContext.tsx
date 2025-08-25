@@ -49,6 +49,12 @@ const DEFAULT_CONFIG: GameConfig = {
   battlefieldSize: { width: 100, height: 100 },
   autoSaveInterval: 30000,
   tickRate: 60,
+  TIMING: {
+    REINFORCEMENT_INTERVAL: 10000,
+    ASSAULT_INTERVAL: 3600000,
+    GAME_TICK_RATE: 1000,
+    AUTO_SAVE_INTERVAL: 30000,
+  },
 };
 
 interface GameEngineProviderProps {
