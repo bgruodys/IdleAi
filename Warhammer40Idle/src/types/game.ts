@@ -9,25 +9,23 @@ export interface Soldier {
   createdAt: number;
 }
 
-export interface Barracks {
-  id: string;
-  level: number;
-  soldiers: Soldier[];
-  maxCapacity: number;
-  trainingSpeed: number; // soldiers per second
-  lastUpdate: number;
-  isTraining: boolean;
-}
-
 export interface GameState {
-  barracks: Barracks[];
+  soldiers: Soldier[];
   resources: {
     gold: number;
     experience: number;
   };
   lastSaveTime: number;
+  lastSoldierSpawn: number;
   totalSoldiers: number;
   totalExperience: number;
+  battleField: BattleField;
+  battleStats: {
+    totalBattles: number;
+    battlesWon: number;
+    soldiersLost: number;
+    orcsKilled: number;
+  };
 }
 
 export interface OfflineProgress {
@@ -35,3 +33,5 @@ export interface OfflineProgress {
   soldiersGained: number;
   experienceGained: number;
 }
+
+export { BattleField, BattleUnit, BattleResult, BattleSettings } from './battle';

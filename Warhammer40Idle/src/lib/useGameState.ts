@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { GameState, Barracks } from '@/types/game';
+import { GameState } from '@/types/game';
 import { loadGameState, saveGameState, autoSave } from './storage';
-import { generateSoldier, upgradeBarracks, getBarracksUpgradeCost, createInitialGameState } from './gameLogic';
+import { spawnSoldierIfReady, createInitialGameState } from './gameLogic';
+import { updateBattleField, getBattleResult, createBattleField } from './battleLogic';
 
 export function useGameState() {
   const [gameState, setGameState] = useState<GameState>(() => {
@@ -27,35 +28,30 @@ export function useGameState() {
         const timeDiff = (now - lastUpdate) / 1000; // seconds
         
         setGameState(prevState => {
-          const newState = { ...prevState };
+          let newState = { ...prevState };
           
-          // Update each barracks
-          newState.barracks = prevState.barracks.map(barracks => {
-            if (!barracks.isTraining) return barracks;
+          // Check if it's time to spawn a new soldier
+          newState = spawnSoldierIfReady(newState);
+          
+          // Update battlefield continuously
+          newState.battleField = updateBattleField(newState.battleField, []);
+          
+          // Check battle result
+          const battleResult = getBattleResult(newState.battleField);
+          if (battleResult.winner !== 'ongoing') {
+            // Battle ended - reset and continue
+            newState.battleField = createBattleField();
+            newState.battleStats.totalBattles += 1;
             
-            const soldiersToAdd = Math.floor(timeDiff * barracks.trainingSpeed);
-            const availableSpace = barracks.maxCapacity - barracks.soldiers.length;
-            const actualSoldiersToAdd = Math.min(soldiersToAdd, availableSpace);
-            
-            const newSoldiers = [];
-            for (let i = 0; i < actualSoldiersToAdd; i++) {
-              newSoldiers.push(generateSoldier(barracks.level));
+            if (battleResult.winner === 'soldiers') {
+              newState.battleStats.battlesWon += 1;
+              newState.resources.experience += battleResult.experienceGained;
+              newState.resources.gold += battleResult.goldGained;
             }
             
-            return {
-              ...barracks,
-              soldiers: [...barracks.soldiers, ...newSoldiers],
-              lastUpdate: now,
-            };
-          });
-          
-          // Update totals
-          const totalSoldiers = newState.barracks.reduce(
-            (sum, barracks) => sum + barracks.soldiers.length, 
-            0
-          );
-          newState.totalSoldiers = totalSoldiers;
-          newState.totalExperience = totalSoldiers * 10; // 10 exp per soldier
+            newState.battleStats.soldiersLost += battleResult.soldiersLost;
+            newState.battleStats.orcsKilled += battleResult.orcsKilled;
+          }
           
           return newState;
         });
@@ -97,70 +93,7 @@ export function useGameState() {
     };
   }, [gameState]);
 
-  // Toggle barracks training
-  const toggleBarracksTraining = useCallback((barracksId: string) => {
-    setGameState(prevState => ({
-      ...prevState,
-      barracks: prevState.barracks.map(barracks =>
-        barracks.id === barracksId
-          ? { ...barracks, isTraining: !barracks.isTraining }
-          : barracks
-      ),
-    }));
-  }, []);
-
-  // Upgrade barracks
-  const upgradeBarracksLevel = useCallback((barracksId: string) => {
-    setGameState(prevState => {
-      const barracks = prevState.barracks.find(b => b.id === barracksId);
-      if (!barracks) return prevState;
-      
-      const upgradeCost = getBarracksUpgradeCost(barracks);
-      if (prevState.resources.gold < upgradeCost) return prevState;
-      
-      return {
-        ...prevState,
-        resources: {
-          ...prevState.resources,
-          gold: prevState.resources.gold - upgradeCost,
-        },
-        barracks: prevState.barracks.map(b =>
-          b.id === barracksId ? upgradeBarracks(b) : b
-        ),
-      };
-    });
-  }, []);
-
-  // Add new barracks
-  const addBarracks = useCallback(() => {
-    const newBarracksCost = 500;
-    if (gameState.resources.gold < newBarracksCost) return;
-    
-    setGameState(prevState => ({
-      ...prevState,
-      resources: {
-        ...prevState.resources,
-        gold: prevState.resources.gold - newBarracksCost,
-      },
-      barracks: [
-        ...prevState.barracks,
-        {
-          id: `barracks_${Date.now()}`,
-          level: 1,
-          soldiers: [],
-          maxCapacity: 10,
-          trainingSpeed: 1,
-          lastUpdate: Date.now(),
-          isTraining: true,
-        },
-      ],
-    }));
-  }, [gameState.resources.gold]);
-
   return {
     gameState,
-    toggleBarracksTraining,
-    upgradeBarracksLevel,
-    addBarracks,
   };
 }

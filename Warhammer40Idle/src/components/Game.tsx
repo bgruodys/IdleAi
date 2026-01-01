@@ -5,7 +5,6 @@ import {
   Container,
   Box,
   Typography,
-  Button,
   Paper,
   Grid,
   Chip,
@@ -13,18 +12,18 @@ import {
   Snackbar,
 } from '@mui/material';
 import {
-  Add,
   Security,
   Star,
   MonetizationOn,
+  Timer,
 } from '@mui/icons-material';
-import { Barracks } from './Barracks';
+import { Battle } from './Battle';
 import { useGameState } from '@/lib/useGameState';
-import { getBarracksUpgradeCost } from '@/lib/gameLogic';
+import { BattleUnit } from '@/types/battle';
 
 export function Game() {
   const [isClient, setIsClient] = useState(false);
-  const { gameState, toggleBarracksTraining, upgradeBarracksLevel, addBarracks } = useGameState();
+  const { gameState } = useGameState();
   const [showOfflineAlert, setShowOfflineAlert] = useState(false);
 
   // Ensure we're on the client side
@@ -49,8 +48,6 @@ export function Game() {
     }
   }, [isClient]);
 
-  const canAffordNewBarracks = gameState.resources.gold >= 500;
-
   // Don't render until we're on the client side
   if (!isClient) {
     return (
@@ -61,6 +58,10 @@ export function Game() {
       </Container>
     );
   }
+
+  // Calculate time until next soldier spawn
+  const timeUntilNextSpawn = Math.max(0, 10000 - (Date.now() - gameState.lastSoldierSpawn));
+  const secondsUntilNextSpawn = Math.ceil(timeUntilNextSpawn / 1000);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -90,41 +91,21 @@ export function Game() {
               color="primary"
               variant="outlined"
             />
+            <Chip
+              icon={<Timer />}
+              label={`Next Soldier: ${secondsUntilNextSpawn}s`}
+              color="info"
+              variant="outlined"
+            />
           </Box>
         </Box>
       </Paper>
 
-      {/* Add New Barracks Button */}
-      <Box mb={3}>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Add />}
-          onClick={addBarracks}
-          disabled={!canAffordNewBarracks}
-          size="large"
-        >
-          Build New Barracks (500 Gold)
-        </Button>
-      </Box>
-
-      {/* Barracks Grid */}
-      <Grid container spacing={2}>
-        {gameState.barracks.map((barracks) => {
-          const canAffordUpgrade = gameState.resources.gold >= getBarracksUpgradeCost(barracks);
-          
-          return (
-            <Grid item xs={12} sm={6} md={4} key={barracks.id}>
-              <Barracks
-                barracks={barracks}
-                onToggleTraining={toggleBarracksTraining}
-                onUpgrade={upgradeBarracksLevel}
-                canAffordUpgrade={canAffordUpgrade}
-              />
-            </Grid>
-          );
-        })}
-      </Grid>
+      {/* Battle Component */}
+      <Battle
+        battleField={gameState.battleField}
+        battleStats={gameState.battleStats}
+      />
 
       {/* Offline Progress Alert */}
       <Snackbar
@@ -137,7 +118,7 @@ export function Game() {
           severity="info" 
           sx={{ width: '100%' }}
         >
-          Welcome back! Your barracks have been training while you were away.
+          Welcome back! Soldiers have been spawning automatically while you were away.
         </Alert>
       </Snackbar>
 
@@ -147,14 +128,6 @@ export function Game() {
           Game Statistics
         </Typography>
         <Grid container spacing={2}>
-          <Grid item xs={6} sm={3}>
-            <Typography variant="body2" color="text.secondary">
-              Total Barracks
-            </Typography>
-            <Typography variant="h6">
-              {gameState.barracks.length}
-            </Typography>
-          </Grid>
           <Grid item xs={6} sm={3}>
             <Typography variant="body2" color="text.secondary">
               Total Soldiers
@@ -173,10 +146,18 @@ export function Game() {
           </Grid>
           <Grid item xs={6} sm={3}>
             <Typography variant="body2" color="text.secondary">
-              Active Barracks
+              Soldiers in Battle
             </Typography>
             <Typography variant="h6">
-              {gameState.barracks.filter(b => b.isTraining).length}
+              {gameState.battleField.units.filter((u: BattleUnit) => u.type === 'soldier' && u.isAlive).length}
+            </Typography>
+          </Grid>
+          <Grid item xs={6} sm={3}>
+            <Typography variant="body2" color="text.secondary">
+              Battles Won
+            </Typography>
+            <Typography variant="h6" color="success.main">
+              {gameState.battleStats.battlesWon}
             </Typography>
           </Grid>
         </Grid>

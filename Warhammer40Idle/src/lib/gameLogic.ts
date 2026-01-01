@@ -1,28 +1,25 @@
-import { GameState, Barracks, Soldier, OfflineProgress } from '@/types/game';
+import { GameState, Soldier, OfflineProgress } from '@/types/game';
+import { createBattleField } from './battleLogic';
 
 // Game constants
 export const GAME_CONSTANTS = {
-  BASE_TRAINING_SPEED: 1, // soldiers per second
-  BASE_BARRACKS_CAPACITY: 10,
+  SOLDIER_SPAWN_INTERVAL: 10000, // 10 seconds
   SOLDIER_BASE_ATTACK: 10,
   SOLDIER_BASE_DEFENSE: 5,
   SOLDIER_BASE_HEALTH: 100,
-  UPGRADE_COST_MULTIPLIER: 1.5,
   EXPERIENCE_PER_SOLDIER: 10,
 };
 
 // Generate a new soldier
-export function generateSoldier(barracksLevel: number): Soldier {
-  const baseMultiplier = 1 + (barracksLevel - 1) * 0.2;
-  
+export function generateSoldier(): Soldier {
   return {
     id: `soldier_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     level: 1,
     experience: 0,
-    attack: Math.floor(GAME_CONSTANTS.SOLDIER_BASE_ATTACK * baseMultiplier),
-    defense: Math.floor(GAME_CONSTANTS.SOLDIER_BASE_DEFENSE * baseMultiplier),
-    health: Math.floor(GAME_CONSTANTS.SOLDIER_BASE_HEALTH * baseMultiplier),
-    maxHealth: Math.floor(GAME_CONSTANTS.SOLDIER_BASE_HEALTH * baseMultiplier),
+    attack: GAME_CONSTANTS.SOLDIER_BASE_ATTACK,
+    defense: GAME_CONSTANTS.SOLDIER_BASE_DEFENSE,
+    health: GAME_CONSTANTS.SOLDIER_BASE_HEALTH,
+    maxHealth: GAME_CONSTANTS.SOLDIER_BASE_HEALTH,
     createdAt: Date.now(),
   };
 }
@@ -33,23 +30,13 @@ export function calculateOfflineProgress(gameState: GameState): OfflineProgress 
   const timeOffline = now - gameState.lastSaveTime;
   const secondsOffline = timeOffline / 1000;
   
-  let totalSoldiersGained = 0;
-  let totalExperienceGained = 0;
-  
-  gameState.barracks.forEach(barracks => {
-    if (barracks.isTraining) {
-      const soldiersGained = Math.floor(secondsOffline * barracks.trainingSpeed);
-      const availableSpace = barracks.maxCapacity - barracks.soldiers.length;
-      const actualSoldiersGained = Math.min(soldiersGained, availableSpace);
-      
-      totalSoldiersGained += actualSoldiersGained;
-      totalExperienceGained += actualSoldiersGained * GAME_CONSTANTS.EXPERIENCE_PER_SOLDIER;
-    }
-  });
+  // Calculate soldiers that would have spawned during offline time
+  const soldiersGained = Math.floor(secondsOffline / 10); // One soldier every 10 seconds
+  const totalExperienceGained = soldiersGained * GAME_CONSTANTS.EXPERIENCE_PER_SOLDIER;
   
   return {
     timeOffline,
-    soldiersGained: totalSoldiersGained,
+    soldiersGained,
     experienceGained: totalExperienceGained,
   };
 }
@@ -63,68 +50,66 @@ export function applyOfflineProgress(gameState: GameState, offlineProgress: Offl
   updatedGameState.resources.experience += offlineProgress.experienceGained;
   updatedGameState.totalExperience += offlineProgress.experienceGained;
   
-  // Generate soldiers for each barracks
-  updatedGameState.barracks = updatedGameState.barracks.map(barracks => {
-    if (!barracks.isTraining) return barracks;
-    
-    const secondsOffline = offlineProgress.timeOffline / 1000;
-    const soldiersGained = Math.floor(secondsOffline * barracks.trainingSpeed);
-    const availableSpace = barracks.maxCapacity - barracks.soldiers.length;
-    const actualSoldiersGained = Math.min(soldiersGained, availableSpace);
-    
-    const newSoldiers: Soldier[] = [];
-    for (let i = 0; i < actualSoldiersGained; i++) {
-      newSoldiers.push(generateSoldier(barracks.level));
-    }
-    
-    return {
-      ...barracks,
-      soldiers: [...barracks.soldiers, ...newSoldiers],
-      lastUpdate: now,
-    };
-  });
+  // Generate soldiers for offline time
+  const newSoldiers: Soldier[] = [];
+  for (let i = 0; i < offlineProgress.soldiersGained; i++) {
+    newSoldiers.push(generateSoldier());
+  }
   
+  updatedGameState.soldiers = [...updatedGameState.soldiers, ...newSoldiers];
   updatedGameState.totalSoldiers += offlineProgress.soldiersGained;
   updatedGameState.lastSaveTime = now;
+  updatedGameState.lastSoldierSpawn = now;
   
   return updatedGameState;
 }
 
 // Create initial game state
 export function createInitialGameState(): GameState {
-  const initialBarracks: Barracks = {
-    id: 'barracks_1',
-    level: 1,
-    soldiers: [],
-    maxCapacity: GAME_CONSTANTS.BASE_BARRACKS_CAPACITY,
-    trainingSpeed: GAME_CONSTANTS.BASE_TRAINING_SPEED,
-    lastUpdate: Date.now(),
-    isTraining: true,
-  };
-  
   return {
-    barracks: [initialBarracks],
+    soldiers: [],
     resources: {
       gold: 1000,
       experience: 0,
     },
     lastSaveTime: Date.now(),
+    lastSoldierSpawn: Date.now(),
     totalSoldiers: 0,
     totalExperience: 0,
+    battleField: createBattleField(),
+    battleStats: {
+      totalBattles: 0,
+      battlesWon: 0,
+      soldiersLost: 0,
+      orcsKilled: 0,
+    },
   };
 }
 
-// Calculate upgrade cost for barracks
-export function getBarracksUpgradeCost(barracks: Barracks): number {
-  return Math.floor(100 * Math.pow(GAME_CONSTANTS.UPGRADE_COST_MULTIPLIER, barracks.level - 1));
+// Check if it's time to spawn a new soldier
+export function shouldSpawnSoldier(gameState: GameState): boolean {
+  const now = Date.now();
+  return now - gameState.lastSoldierSpawn >= GAME_CONSTANTS.SOLDIER_SPAWN_INTERVAL;
 }
 
-// Upgrade barracks
-export function upgradeBarracks(barracks: Barracks): Barracks {
+// Spawn a new soldier if it's time
+export function spawnSoldierIfReady(gameState: GameState): GameState {
+  if (!shouldSpawnSoldier(gameState)) {
+    return gameState;
+  }
+  
+  const newSoldier = generateSoldier();
+  const now = Date.now();
+  
   return {
-    ...barracks,
-    level: barracks.level + 1,
-    maxCapacity: Math.floor(barracks.maxCapacity * 1.5),
-    trainingSpeed: barracks.trainingSpeed * 1.2,
+    ...gameState,
+    soldiers: [...gameState.soldiers, newSoldier],
+    lastSoldierSpawn: now,
+    totalSoldiers: gameState.totalSoldiers + 1,
+    totalExperience: gameState.totalExperience + GAME_CONSTANTS.EXPERIENCE_PER_SOLDIER,
+    resources: {
+      ...gameState.resources,
+      experience: gameState.resources.experience + GAME_CONSTANTS.EXPERIENCE_PER_SOLDIER,
+    },
   };
 }
