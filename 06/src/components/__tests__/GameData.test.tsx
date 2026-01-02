@@ -52,13 +52,14 @@ describe('GameData', () => {
   it('should display planet information when game is started', () => {
     const store = createTestStore({
       gameStarted: true,
-      player: {
-        id: 'player-1',
-        name: 'Test Commander',
-        rank: 1,
-        rankTitle: 'Recruit',
-        arrivedAt: Date.now(),
-      },
+        player: {
+          id: 'player-1',
+          name: 'Test Commander',
+          rank: 1,
+          rankTitle: 'Recruit',
+          experience: 0,
+          arrivedAt: Date.now(),
+        },
       planet: {
         id: 'planet-1',
         name: 'Test Planet',
@@ -120,13 +121,14 @@ describe('GameData', () => {
   it('should display reinforcements list', () => {
     const store = createTestStore({
       gameStarted: true,
-      player: {
-        id: 'player-1',
-        name: 'Test Commander',
-        rank: 1,
-        rankTitle: 'Recruit',
-        arrivedAt: Date.now(),
-      },
+        player: {
+          id: 'player-1',
+          name: 'Test Commander',
+          rank: 1,
+          rankTitle: 'Recruit',
+          experience: 0,
+          arrivedAt: Date.now(),
+        },
       planet: {
         id: 'planet-1',
         name: 'Test Planet',
@@ -220,13 +222,14 @@ describe('GameData', () => {
   it('should display message when no reinforcements have arrived', () => {
     const store = createTestStore({
       gameStarted: true,
-      player: {
-        id: 'player-1',
-        name: 'Test Commander',
-        rank: 1,
-        rankTitle: 'Recruit',
-        arrivedAt: Date.now(),
-      },
+        player: {
+          id: 'player-1',
+          name: 'Test Commander',
+          rank: 1,
+          rankTitle: 'Recruit',
+          experience: 0,
+          arrivedAt: Date.now(),
+        },
       planet: {
         id: 'planet-1',
         name: 'Test Planet',

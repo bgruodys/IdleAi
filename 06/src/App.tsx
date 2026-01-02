@@ -3,10 +3,11 @@ import { Provider } from 'react-redux';
 import { Box, Typography } from '@mui/material';
 import { store } from './store/store';
 import { useAppDispatch, useAppSelector } from './store/hooks';
-import { startGame, loadGame, addOfflineEarnings, updateSession, addReinforcement } from './store/gameSlice';
+import { startGame, loadGame, addOfflineEarnings, updateSession, addReinforcement, Resources } from './store/gameSlice';
 import { useReinforcementTimer } from './hooks/useReinforcementTimer';
 import { useResourceTimer } from './hooks/useResourceTimer';
 import { GameData } from './components/GameData';
+import { OfflineEarningsDialog } from './components/OfflineEarningsDialog';
 import { 
   loadGameStateFromStorage, 
   checkActiveSession, 
@@ -20,9 +21,20 @@ import { initSessionManager, cleanupSessionManager, hasOtherActiveSession } from
 const AppContent: React.FC = () => {
   const dispatch = useAppDispatch();
   const gameState = useAppSelector((state) => state.game);
-  const { gameStarted, sessionInfo } = gameState || { gameStarted: false, sessionInfo: null };
+  const { gameStarted, sessionInfo, player } = gameState || { gameStarted: false, sessionInfo: null, player: null };
   const [isInitialized, setIsInitialized] = useState(false);
   const [initError, setInitError] = useState<string | null>(null);
+  const [offlineEarningsDialog, setOfflineEarningsDialog] = useState<{
+    open: boolean;
+    timeAwayMs: number;
+    earnings: Resources;
+    reinforcements: number;
+  }>({
+    open: false,
+    timeAwayMs: 0,
+    earnings: { credits: 0, munitions: 0, promethium: 0, rawMaterials: 0, imperialFavor: 0 },
+    reinforcements: 0,
+  });
 
   useEffect(() => {
     // Initialize game on mount
@@ -57,6 +69,7 @@ const AppContent: React.FC = () => {
           
           // Calculate offline earnings
           const currentTime = Date.now();
+          const timeAway = currentTime - (savedState.sessionInfo?.lastActiveTime || currentTime);
           const offlineEarnings = calculateOfflineEarningsForState(savedState, currentTime);
           const offlineReinforcements = calculateOfflineReinforcements(
             savedState.lastReinforcementTime,
@@ -66,8 +79,26 @@ const AppContent: React.FC = () => {
           // Load the saved state
           dispatch(loadGame(savedState));
           
+          // Check if we should show offline earnings dialog
+          // Show dialog if away for at least 1 minute and there are earnings or reinforcements
+          const MIN_OFFLINE_TIME = 60 * 1000; // 1 minute
+          const hasEarnings = offlineEarnings.credits > 0 || 
+                            offlineEarnings.munitions > 0 || 
+                            offlineEarnings.promethium > 0 || 
+                            offlineEarnings.rawMaterials > 0;
+          
+          if (timeAway >= MIN_OFFLINE_TIME && (hasEarnings || offlineReinforcements > 0)) {
+            // Show dialog after state is loaded
+            setOfflineEarningsDialog({
+              open: true,
+              timeAwayMs: timeAway,
+              earnings: offlineEarnings,
+              reinforcements: offlineReinforcements,
+            });
+          }
+          
           // Add offline earnings if any
-          if (offlineEarnings.credits > 0 || offlineEarnings.munitions > 0 || offlineEarnings.promethium > 0) {
+          if (hasEarnings) {
             dispatch(addOfflineEarnings(offlineEarnings));
           }
           
@@ -175,7 +206,22 @@ const AppContent: React.FC = () => {
     );
   }
 
-  return <GameData />;
+  return (
+    <>
+      <GameData />
+      {player && (
+        <OfflineEarningsDialog
+          open={offlineEarningsDialog.open}
+          onClose={() => setOfflineEarningsDialog({ ...offlineEarningsDialog, open: false })}
+          timeAwayMs={offlineEarningsDialog.timeAwayMs}
+          earnings={offlineEarningsDialog.earnings}
+          reinforcements={offlineEarningsDialog.reinforcements}
+          playerRank={player.rank}
+          playerRankTitle={player.rankTitle}
+        />
+      )}
+    </>
+  );
 };
 
 const App: React.FC = () => {

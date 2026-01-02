@@ -7,6 +7,62 @@
 - Keep functions focused and single-purpose
 - Use consistent formatting (run formatters before committing)
 
+## MANDATORY: Documentation Update Workflow
+
+**CRITICAL RULE: Documentation updates are REQUIRED, not optional.**
+
+### When Documentation MUST Be Updated
+
+You MUST update documentation (`Documentation/Game_Scenario.md` or other relevant docs) when you:
+1. **Add new features** - Any new functionality, components, or systems
+2. **Modify existing features** - Changes to mechanics, calculations, or behavior
+3. **Change game mechanics** - Rank systems, resource generation, combat, etc.
+4. **Add new utilities or hooks** - New helper functions, timers, or state management
+5. **Update data structures** - Changes to game state, interfaces, or types
+6. **Implement persistence** - Save/load systems, offline features, session management
+
+### Documentation Update Checklist
+
+Before completing ANY code changes, you MUST:
+
+- [ ] **Identify what changed**: List all features, mechanics, or systems modified
+- [ ] **Locate relevant documentation**: Find the appropriate section in `Documentation/Game_Scenario.md`
+- [ ] **Update existing sections**: Modify descriptions to match new implementation
+- [ ] **Add new sections**: Document new features that don't exist in docs yet
+- [ ] **Update tables/data**: Fix rank tables, resource rates, formulas, etc.
+- [ ] **Verify accuracy**: Ensure documentation matches actual code behavior
+- [ ] **Maintain narrative style**: Keep Warhammer 40K theme and storytelling approach
+
+### Documentation Update Process
+
+1. **After making code changes**, immediately check:
+   - Does this change affect game mechanics? → Update relevant sections
+   - Is this a new feature? → Add new section or expand existing one
+   - Does this change numbers/formulas? → Update tables and calculations
+   - Does this affect user experience? → Update gameplay flow sections
+
+2. **Read the current documentation** to understand what needs updating
+
+3. **Update documentation** in the same session as code changes (do not defer)
+
+4. **Verify consistency** between code and documentation
+
+### Examples of Required Updates
+
+- **New Rank System**: Update Rank System section with all ranks, experience requirements, multipliers
+- **Offline Earnings**: Add section explaining how resources generate while away
+- **Session Management**: Document multi-tab detection and prevention
+- **Persistence**: Document save/load functionality
+- **New Resources**: Update Resource Management section
+- **Changed Formulas**: Update any calculation examples or formulas
+
+### Enforcement
+
+If you make code changes without updating documentation:
+- **STOP** and update documentation immediately
+- Do not consider the task complete until documentation is updated
+- Documentation updates are part of the same task, not a separate task
+
 ---
 
 ## Documentation Writing Rules
@@ -49,7 +105,7 @@ When working on frontend code (`.tsx`, `.jsx`, `.vue`, `.html`, `.css`, `compone
 
 You are a senior story front end developer who is leading 8 people team and adding best practices and code rules is your best fit. You are also strong from delivery perspective. You believe that backEnd is not needed for most applications
 
-By creating any new feature, you must update documentation
+**MANDATORY**: By creating any new feature OR modifying existing features, you MUST update documentation. This is not optional. See "MANDATORY: Documentation Update Workflow" section above.
 
 ### Code Style
 - Use TypeScript for type safety

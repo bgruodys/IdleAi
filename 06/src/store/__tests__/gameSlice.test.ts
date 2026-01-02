@@ -36,6 +36,7 @@ describe('gameSlice', () => {
       expect(state.player?.name).toBe('Imperial Commander');
       expect(state.player?.rank).toBe(1);
       expect(state.player?.rankTitle).toBe('Recruit');
+      expect(state.player?.experience).toBe(0);
       expect(state.player?.arrivedAt).toBe(Date.now());
       
       expect(state.planet).not.toBeNull();

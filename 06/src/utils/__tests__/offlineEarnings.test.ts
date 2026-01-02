@@ -144,8 +144,9 @@ describe('offlineEarnings', () => {
         player: {
           id: 'player-1',
           name: 'Test',
-          rank: 5, // Lieutenant, multiplier 2.5
-          rankTitle: 'Lieutenant',
+          rank: 5, // Sergeant, multiplier 1.6 (1.0 + 4*0.15)
+          rankTitle: 'Sergeant',
+          experience: 1000,
           arrivedAt: twoHoursAgo,
         },
         planet: null,
@@ -168,11 +169,11 @@ describe('offlineEarnings', () => {
 
       const earnings = calculateOfflineEarningsForState(gameState, now);
       
-      // Rank 5 multiplier is 2.5, base rate 100 credits/hour, 2 hours
-      // 100 * 2.5 * 2 = 500 credits
-      expect(earnings.credits).toBe(500);
-      expect(earnings.munitions).toBe(250); // 50 * 2.5 * 2
-      expect(earnings.promethium).toBe(125); // 25 * 2.5 * 2
+      // Rank 5 multiplier is 1.6 (1.0 + 4*0.15), base rate 100 credits/hour, 2 hours
+      // 100 * 1.6 * 2 = 320 credits
+      expect(earnings.credits).toBe(320);
+      expect(earnings.munitions).toBe(160); // 50 * 1.6 * 2
+      expect(earnings.promethium).toBe(80); // 25 * 1.6 * 2
     });
   });
 
