@@ -15,7 +15,8 @@ import {
   updateSessionActivity,
   clearSession 
 } from './utils/persistence';
-import { calculateOfflineEarningsForState, calculateOfflineReinforcements } from './utils/offlineEarnings';
+import { calculateOfflineEarningsForState, calculateOfflineReinforcements, generateOfflineReinforcementsByType } from './utils/offlineEarnings';
+import { REINFORCEMENT_TYPES_EXPORT } from './store/gameSlice';
 import { initSessionManager, cleanupSessionManager, hasOtherActiveSession } from './utils/sessionManager';
 
 const AppContent: React.FC = () => {
@@ -29,11 +30,13 @@ const AppContent: React.FC = () => {
     timeAwayMs: number;
     earnings: Resources;
     reinforcements: number;
+    reinforcementsByType: Map<string, { count: number; totalUnits: number }>;
   }>({
     open: false,
     timeAwayMs: 0,
     earnings: { credits: 0, munitions: 0, promethium: 0, rawMaterials: 0, imperialFavor: 0 },
     reinforcements: 0,
+    reinforcementsByType: new Map(),
   });
 
   useEffect(() => {
@@ -76,6 +79,13 @@ const AppContent: React.FC = () => {
             currentTime
           );
           
+          // Generate offline reinforcements by type for display
+          const reinforcementsToAdd = Math.min(offlineReinforcements, 100);
+          const reinforcementsByType = generateOfflineReinforcementsByType(
+            reinforcementsToAdd,
+            REINFORCEMENT_TYPES_EXPORT
+          );
+          
           // Load the saved state
           dispatch(loadGame(savedState));
           
@@ -94,6 +104,7 @@ const AppContent: React.FC = () => {
               timeAwayMs: timeAway,
               earnings: offlineEarnings,
               reinforcements: offlineReinforcements,
+              reinforcementsByType,
             });
           }
           
@@ -103,7 +114,7 @@ const AppContent: React.FC = () => {
           }
           
           // Add offline reinforcements (simplified - just add them all at once)
-          for (let i = 0; i < Math.min(offlineReinforcements, 100); i++) {
+          for (let i = 0; i < reinforcementsToAdd; i++) {
             dispatch(addReinforcement());
           }
           
@@ -216,6 +227,7 @@ const AppContent: React.FC = () => {
           timeAwayMs={offlineEarningsDialog.timeAwayMs}
           earnings={offlineEarningsDialog.earnings}
           reinforcements={offlineEarningsDialog.reinforcements}
+          reinforcementsByType={offlineEarningsDialog.reinforcementsByType}
           playerRank={player.rank}
           playerRankTitle={player.rankTitle}
         />

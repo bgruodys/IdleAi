@@ -10,11 +10,13 @@ import {
   List,
   ListItem,
   ListItemText,
+  ListItemIcon,
   Divider,
   Paper,
   Chip,
 } from '@mui/material';
 import { Resources } from '../store/gameSlice';
+import { ReinforcementIcon } from '../utils/reinforcementIcons';
 
 interface OfflineEarningsDialogProps {
   open: boolean;
@@ -22,6 +24,7 @@ interface OfflineEarningsDialogProps {
   timeAwayMs: number;
   earnings: Resources;
   reinforcements: number;
+  reinforcementsByType: Map<string, { count: number; totalUnits: number }>;
   playerRank: number;
   playerRankTitle: string;
 }
@@ -68,6 +71,7 @@ export const OfflineEarningsDialog: React.FC<OfflineEarningsDialogProps> = ({
   timeAwayMs,
   earnings,
   reinforcements,
+  reinforcementsByType,
   playerRank,
   playerRankTitle,
 }) => {
@@ -176,19 +180,64 @@ export const OfflineEarningsDialog: React.FC<OfflineEarningsDialogProps> = ({
             <>
               <Divider />
               <Box>
-                <Typography variant="h6" gutterBottom>
-                  Reinforcements Arrived
-                </Typography>
-                <Paper elevation={1} sx={{ p: 2, bgcolor: 'info.light', color: 'info.contrastText' }}>
-                  <Typography variant="h5" fontWeight="bold">
-                    {reinforcements.toLocaleString()} {reinforcements === 1 ? 'Reinforcement' : 'Reinforcements'}
+                {(() => {
+                  // Calculate total units from all reinforcement types
+                  const totalUnits = Array.from(reinforcementsByType.values())
+                    .reduce((sum, data) => sum + data.totalUnits, 0);
+                  
+                  return (
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                      <Typography variant="h6">
+                        Reinforcements Arrived
+                      </Typography>
+                      <Chip 
+                        label={`${totalUnits.toLocaleString()} Total Units`} 
+                        color="info" 
+                        size="small"
+                        sx={{ fontWeight: 'bold' }}
+                      />
+                    </Box>
+                  );
+                })()}
+                {reinforcementsByType.size > 0 ? (
+                  <List dense>
+                    {Array.from(reinforcementsByType.entries())
+                      .sort((a, b) => a[0].localeCompare(b[0]))
+                      .map(([type, data]) => (
+                        <ListItem key={type}>
+                          <ListItemIcon>
+                            <ReinforcementIcon type={type} />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={type}
+                            secondary={`${data.totalUnits.toLocaleString()} ${data.totalUnits === 1 ? 'unit' : 'units'}`}
+                          />
+                          <Chip 
+                            label={`+${data.totalUnits.toLocaleString()}`} 
+                            color="info" 
+                            size="small"
+                            variant="outlined"
+                          />
+                        </ListItem>
+                      ))}
+                  </List>
+                ) : (
+                  <Paper elevation={1} sx={{ p: 2, bgcolor: 'info.light', color: 'info.contrastText' }}>
+                    <Typography variant="h5" fontWeight="bold">
+                      {reinforcements.toLocaleString()} {reinforcements === 1 ? 'Reinforcement' : 'Reinforcements'}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
+                      {reinforcements > 100
+                        ? 'Capped at 100 reinforcements to prevent UI overload'
+                        : 'All reinforcements have been added to your forces'}
+                    </Typography>
+                  </Paper>
+                )}
+                {reinforcements > 100 && (
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1, fontStyle: 'italic' }}>
+                    Note: Display shows breakdown for first 100 reinforcements. All {reinforcements.toLocaleString()} have been added to your forces.
                   </Typography>
-                  <Typography variant="body2" sx={{ mt: 1, opacity: 0.9 }}>
-                    {reinforcements > 100
-                      ? 'Capped at 100 reinforcements to prevent UI overload'
-                      : 'All reinforcements have been added to your forces'}
-                  </Typography>
-                </Paper>
+                )}
               </Box>
             </>
           )}

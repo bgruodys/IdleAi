@@ -57,4 +57,35 @@ export function calculateOfflineReinforcements(
   return Math.floor(timeAway / REINFORCEMENT_INTERVAL);
 }
 
+/**
+ * Generate offline reinforcements and track them by type
+ * This simulates what would have been generated offline
+ */
+export function generateOfflineReinforcementsByType(
+  count: number,
+  reinforcementTypes: string[]
+): Map<string, { count: number; totalUnits: number }> {
+  const byType = new Map<string, { count: number; totalUnits: number }>();
+  
+  // Helper to get random element
+  const getRandomElement = <T,>(array: T[]): T => {
+    return array[Math.floor(Math.random() * array.length)];
+  };
+  
+  for (let i = 0; i < count; i++) {
+    const type = getRandomElement(reinforcementTypes);
+    const unitCount = Math.floor(Math.random() * 10) + 1;
+    
+    const existing = byType.get(type);
+    if (existing) {
+      existing.count += 1;
+      existing.totalUnits += unitCount;
+    } else {
+      byType.set(type, { count: 1, totalUnits: unitCount });
+    }
+  }
+  
+  return byType;
+}
+
 
