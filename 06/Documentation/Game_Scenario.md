@@ -7,12 +7,13 @@
 4. [Rank System](#rank-system)
 5. [Resource Management](#resource-management)
 6. [Reinforcements](#reinforcements)
-7. [Offline Earnings & Persistence](#offline-earnings--persistence)
-8. [Session Management](#session-management)
-9. [Combat System](#combat-system) *(Planned)*
-10. [Village Defense](#village-defense) *(Planned)*
-11. [Progression Path](#progression-path)
-12. [Gameplay Flow](#gameplay-flow)
+7. [Planetary Map System](#planetary-map-system)
+8. [Offline Earnings & Persistence](#offline-earnings--persistence)
+9. [Session Management](#session-management)
+10. [Combat System](#combat-system) *(Planned)*
+11. [Village Defense](#village-defense) *(Planned)*
+12. [Progression Path](#progression-path)
+13. [Gameplay Flow](#gameplay-flow)
 
 ---
 
@@ -41,10 +42,13 @@ But beware, for the enemies of mankind are relentless. They will not rest until 
 - **In-Game Documentation**: Interactive documentation viewer with rank tables, reinforcement types, and game mechanics
 - **Reinforcement Icons**: Visual icons for each reinforcement type (Imperial Guardsmen, Heavy Weapons Team, Scout Squad, Veteran Squad, Armored Support)
 - **Reinforcement Aggregation**: Reinforcements are automatically grouped by type with total unit counts
+- **Planetary Map System**: Interactive map showing terrain, enemy locations, and threat levels across the planet
 - **Warhammer Lore Integration**: Immersive storytelling in the 40K universe
 
 ### Planned Features
 - **Combat System**: Engage enemies through scouting missions to gain experience
+- **Scouting Missions**: Send scouts to reveal enemy positions and gather intelligence
+- **Combat Deployments**: Deploy warriors to engage and eliminate enemy forces
 - **Village Defense**: Protect your base from enemy attacks (rank penalties on defeat)
 
 ---
@@ -197,6 +201,256 @@ When you return to the game after being away:
 - The system calculates how many reinforcements should have arrived
 - All missed reinforcements are added automatically (capped at 100 to prevent overwhelming the UI)
 - Each offline reinforcement follows the same random type and unit count rules
+
+---
+
+## Planetary Map System
+
+As you emerge from your drop pod onto this hostile world, the first thing that strikes you is the vastness of the terrain stretching in every direction. The planet's surface is a patchwork of dangerous landscapes, each hiding potential threats or valuable resources. Your tactical display shows a real-time map of the surrounding area, but much of it remains shrouded in darkness—you must send scouts to reveal what lies beyond your immediate vision.
+
+The Planetary Map System is your primary tool for understanding the battlefield and planning your operations. It displays the terrain surrounding your forward operating base and marks known enemy positions, but remember: intelligence is only as good as your reconnaissance efforts.
+
+### Map Overview
+
+The planetary map is divided into **sectors**—distinct regions of terrain that may contain enemy forces, resources, or both. Each sector represents a potential mission location where you can deploy scouts to gather intelligence or warriors to engage in combat.
+
+**Map Features:**
+- **Interactive Terrain Display**: Visual representation of the planet's surface using Voronoi-based region generation
+- **Enemy Location Markers**: Known enemy positions are marked with colored indicators
+- **Threat Level Indicators**: Each sector displays its threat level (0-10) to help you assess danger
+- **Resource Information**: Hover over sectors to see potential resource caches
+
+### Terrain Types
+
+The planet's surface is composed of ten distinct terrain types, each presenting unique challenges and opportunities:
+
+1. **Wasteland**
+   - Barren wasteland scarred by war
+   - Color: Brown (#8B7355)
+   - Often contains remnants of past conflicts
+
+2. **Forest**
+   - Dense alien forest teeming with unknown dangers
+   - Color: Dark Green (#2d5016)
+   - Provides cover but limits visibility
+
+3. **Mountain Range**
+   - Towering peaks and treacherous passes
+   - Color: Gray (#5a5a5a)
+   - Natural defensive positions but difficult to traverse
+
+4. **Desert**
+   - Endless dunes under a harsh sun
+   - Color: Tan (#d4a574)
+   - Open terrain with minimal cover
+
+5. **Swamp**
+   - Toxic swamplands with hidden perils
+   - Color: Dark Green (#3d5a3d)
+   - Difficult terrain that slows movement
+
+6. **Ruins**
+   - Ancient ruins of a forgotten civilization
+   - Color: Gray (#6b6b6b)
+   - May contain valuable artifacts and resources
+
+7. **Industrial Zone**
+   - Abandoned industrial complex
+   - Color: Dark Gray (#4a4a4a)
+   - Potential for resource extraction
+
+8. **Plains**
+   - Open grasslands stretching to the horizon
+   - Color: Olive Green (#6b8e23)
+   - Fast movement but exposed positions
+
+9. **Volcanic Region**
+   - Volcanic region with active lava flows
+   - Color: Brown (#8b4513)
+   - Extreme danger but rich in rare materials
+
+10. **Ice Fields**
+    - Frozen wasteland of ice and snow
+    - Color: Light Blue (#b0c4de)
+    - Harsh conditions but strategic value
+
+### Enemy Types
+
+The enemies of mankind have established footholds across the planet. Each enemy type presents different tactical challenges:
+
+1. **Orks** (Green - #228B22)
+   - Savage greenskin warbands roaming the area
+   - Aggressive and numerous, but disorganized
+   - Threat Level: Variable (1-8)
+
+2. **Chaos Forces** (Dark Red - #8B0000)
+   - Chaos corruption taints the land
+   - Highly dangerous, unpredictable tactics
+   - Threat Level: Variable (1-8)
+
+3. **Tyranids** (Purple - #4B0082)
+   - Tyranid bioforms have been sighted
+   - Swarming tactics, overwhelming numbers
+   - Threat Level: Variable (1-8)
+
+4. **Necrons** (Dark Slate - #2F4F4F)
+   - Necron tomb structures detected
+   - Ancient technology, difficult to destroy
+   - Threat Level: Variable (1-8)
+
+5. **Eldar** (Pink - #FF1493)
+   - Eldar activity reported
+   - Fast, elusive, hit-and-run tactics
+   - Threat Level: Variable (1-8)
+
+6. **Tau** (Blue - #1E90FF)
+   - Tau forces have established presence
+   - Advanced technology, ranged combat
+   - Threat Level: Variable (1-8)
+
+**No Enemy Presence** (Transparent)
+- Safe sectors with no detected threats
+- Still may contain valuable resources
+- Ideal for resource gathering operations
+
+### Threat Levels
+
+Each sector with enemy presence is assigned a **Threat Level** ranging from 0 to 10:
+
+- **0**: No enemy presence detected
+- **1-3**: Light resistance - Small enemy patrols, minimal danger
+- **4-6**: Moderate threat - Organized enemy forces, requires careful planning
+- **7-8**: Extreme threat - Major enemy concentrations, high risk operations
+- **9-10**: Critical threat - Maximum danger, elite enemy units (planned for future implementation)
+
+**Threat Level Indicators:**
+- Visual stroke width on map regions (thicker = higher threat)
+- Color-coded threat chips in sector information
+- Enemy count correlates with threat level (10-1000+ units)
+
+### Map Interaction
+
+**Hover Information:**
+- Move your cursor over any sector to see detailed information
+- Information panel displays:
+  - Sector name (e.g., "Alpha Sector", "Beta Zone", "Nexus Point")
+  - Terrain type with color-coded chip
+  - Enemy type and unit count (if present)
+  - Threat level indicator
+  - Terrain description and enemy presence details
+
+**Map Controls:**
+- **Drag**: Rotate the map view to see different angles
+- **Scroll Wheel**: Zoom in/out (0.3x to 2.0x zoom range)
+- **Zoom In/Out Buttons**: Adjust zoom level
+- **Reset View Button**: Return to default rotation and zoom
+
+### Scouting System (Planned)
+
+The map shows terrain and known enemy positions, but much of the planet remains unexplored. To reveal enemy locations and gather intelligence, you must deploy **Scout Squads**.
+
+**Scouting Mechanics (To Be Implemented):**
+- Deploy Scout Squads to unexplored sectors
+- Scouts reveal enemy positions, threat levels, and resource caches
+- Scouting missions take time to complete
+- Higher threat sectors require more scouts or take longer
+- Successful scouting provides intelligence for combat planning
+- Scouts may encounter enemies and require extraction
+
+**Scout Deployment:**
+- Select an unexplored sector on the map
+- Assign Scout Squad units to the mission
+- Mission duration depends on distance and threat level
+- Upon completion, sector information is revealed
+- Intelligence gathered helps plan warrior deployments
+
+### Combat Deployment (Planned)
+
+Once you've identified enemy positions through scouting, you can deploy your **Warriors** to engage and eliminate threats.
+
+**Combat Deployment Mechanics (To Be Implemented):**
+- Select a sector with known enemy presence
+- Deploy appropriate warrior units (Imperial Guardsmen, Heavy Weapons Teams, Veteran Squads, Armored Support)
+- Combat success depends on:
+  - Number and type of units deployed
+  - Enemy threat level and unit count
+  - Terrain advantages/disadvantages
+  - Your rank and tactical bonuses
+- Victory grants experience points, resources, and clears the sector
+- Defeat results in unit losses and potential rank penalties
+
+**Strategic Considerations:**
+- Higher threat sectors offer greater rewards but require more forces
+- Terrain affects combat effectiveness (mountains favor defense, plains favor mobility)
+- Enemy types have different weaknesses (scouts gather this intelligence)
+- Resource caches are revealed after successful combat
+
+### Resource Discovery
+
+Each sector contains potential resource caches that can be claimed after clearing enemy forces:
+
+**Resource Types Found:**
+- **Imperial Credits**: 50-500+ per sector (scales with threat level)
+- **Munitions**: 20-200+ per sector
+- **Promethium**: 10-100+ per sector
+- **Raw Materials**: 30-300+ per sector
+
+**Resource Multiplier:**
+- Higher threat sectors contain more resources
+- Resource amount = Base Resources × (1 + Threat Level × 0.1)
+- Example: Threat Level 5 sector has 1.5x base resources
+
+### Map Generation
+
+The planetary map is procedurally generated using Voronoi-based region algorithms:
+
+- **Region Count**: 200 sectors per map
+- **Random Distribution**: Terrain types and enemy positions are randomly assigned
+- **Enemy Probability**: 70% chance of enemy presence in each sector
+- **Threat Distribution**: Threat levels range from 1-8 for sectors with enemies
+- **Unique Sector Names**: Sectors are named using Imperial designation system (Alpha Sector, Beta Zone, etc.) or thematic Warhammer names (Nexus Point, Void Reach, Blood Fields, etc.)
+
+### Current Implementation Status
+
+**✅ Implemented:**
+- Interactive map display with terrain visualization
+- Enemy location markers with color coding
+- Threat level indicators
+- Hover information panels
+- Multiple map styles (Hex, Grid, Voronoi)
+- Map views with zoom controls
+- Resource information display
+- Procedural map generation
+
+**🚧 Planned Features:**
+- Scouting mission system
+- Warrior deployment interface
+- Combat resolution mechanics
+- Sector exploration/fog of war
+- Mission planning interface
+- Real-time enemy movement (future expansion)
+
+### Strategic Map Usage
+
+**Early Game:**
+- Focus on low-threat sectors (Threat Level 1-3)
+- Scout nearby sectors to build intelligence network
+- Identify resource-rich areas for future operations
+- Avoid high-threat sectors until you have sufficient forces
+
+**Mid Game:**
+- Expand scouting operations to moderate-threat sectors (Threat Level 4-6)
+- Deploy warriors to clear low-threat sectors for resources
+- Build up forces before tackling dangerous areas
+- Use terrain knowledge to plan optimal attack routes
+
+**Late Game:**
+- Challenge extreme-threat sectors (Threat Level 7-8)
+- Coordinate multi-sector operations
+- Maximize resource extraction from cleared sectors
+- Establish secure supply lines across the map
+
+The planetary map is your window into the war-torn world you've been sent to conquer. Use it wisely, commander. Every sector you scout brings you closer to understanding your enemy. Every battle you win brings you closer to the Emperor's favor. But remember: in the grim darkness of the far future, knowledge without action is meaningless. You must not only see the battlefield—you must command it.
 
 ---
 
@@ -800,7 +1054,7 @@ Once implemented, players must balance active play (to gain experience) with the
 
 ## Conclusion
 
-**Current State:** The Emperor's Call is currently an idle game focused on automatic resource generation and reinforcement accumulation. The foundation is in place with a complete rank system (30 ranks), persistence system, offline earnings, and session management.
+**Current State:** The Emperor's Call is currently an idle game focused on automatic resource generation and reinforcement accumulation. The foundation is in place with a complete rank system (30 ranks), persistence system, offline earnings, session management, and a fully interactive planetary map system showing terrain and enemy positions.
 
 **Future Vision:** Once the combat and defense systems are implemented, The Emperor's Call will present a unique challenge: balance the glory of combat with the responsibility of command. Your rank will reflect not just your victories, but your ability to maintain the Emperor's presence on this hostile world. Every decision will matter, every battle will count, and every defeat will teach a harsh lesson.
 
@@ -819,6 +1073,15 @@ Will you rise through the ranks to become the Emperor's Champion, or will the en
 - **Offline Earnings**: Resources and reinforcements continue while away
 - **Persistence**: Automatic save/load to localStorage with export/import UI buttons
 - **Session Management**: Multi-tab detection and prevention using BroadcastChannel API
+- **Planetary Map System**: 
+  - Interactive map display with terrain visualization (10 terrain types)
+  - Enemy location markers with color coding (6 enemy types)
+  - Threat level indicators (0-10 scale)
+  - Hover information panels showing sector details
+  - Multiple map styles (Hexagonal, Grid, Voronoi)
+  - Map views with zoom controls (0.3x to 2.0x)
+  - Procedural map generation (200 sectors per map)
+  - Resource information display per sector
 - **UI System**: 
   - Countdown timers (CircularProgress and LinearProgress) showing time until next event
   - Progress bars visualizing countdown progress
@@ -830,11 +1093,15 @@ Will you rise through the ranks to become the Emperor's Champion, or will the en
 - **Game Reset**: Ability to reset game with confirmation (clears localStorage, session, and reloads page)
 
 ### 🚧 Planned Features
-- **Combat System**: Scouting missions and enemy encounters
+- **Scouting System**: Deploy scouts to reveal enemy positions and gather intelligence
+- **Combat Deployment**: Deploy warriors to engage and eliminate enemy forces
+- **Combat System**: Scouting missions and enemy encounters with experience rewards
 - **Village Defense**: Base defense mechanics and enemy attacks
 - **Experience Gain**: Combat victories grant experience points
 - **Rank Decreases**: Experience loss from village defeats
 - **Resource Spending**: Upgrades, equipment, and base improvements
+- **Fog of War**: Unexplored sectors hidden until scouted
+- **Mission Planning Interface**: UI for selecting sectors and deploying units
 
 ---
 
