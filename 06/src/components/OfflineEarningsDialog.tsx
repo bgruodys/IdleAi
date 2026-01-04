@@ -180,25 +180,17 @@ export const OfflineEarningsDialog: React.FC<OfflineEarningsDialogProps> = ({
             <>
               <Divider />
               <Box>
-                {(() => {
-                  // Calculate total units from all reinforcement types
-                  const totalUnits = Array.from(reinforcementsByType.values())
-                    .reduce((sum, data) => sum + data.totalUnits, 0);
-                  
-                  return (
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                      <Typography variant="h6">
-                        Reinforcements Arrived
-                      </Typography>
-                      <Chip 
-                        label={`${totalUnits.toLocaleString()} Total Units`} 
-                        color="info" 
-                        size="small"
-                        sx={{ fontWeight: 'bold' }}
-                      />
-                    </Box>
-                  );
-                })()}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                  <Typography variant="h6">
+                    Reinforcements Arrived
+                  </Typography>
+                  <Chip 
+                    label={`${reinforcements.toLocaleString()} Total`} 
+                    color="info" 
+                    size="small"
+                    sx={{ fontWeight: 'bold' }}
+                  />
+                </Box>
                 {reinforcementsByType.size > 0 ? (
                   <List dense>
                     {Array.from(reinforcementsByType.entries())
@@ -210,7 +202,7 @@ export const OfflineEarningsDialog: React.FC<OfflineEarningsDialogProps> = ({
                           </ListItemIcon>
                           <ListItemText
                             primary={type}
-                            secondary={`${data.totalUnits.toLocaleString()} ${data.totalUnits === 1 ? 'unit' : 'units'}`}
+                            secondary={`${data.count} ${data.count === 1 ? 'arrival' : 'arrivals'} • ${data.totalUnits.toLocaleString()} ${data.totalUnits === 1 ? 'unit' : 'units'}`}
                           />
                           <Chip 
                             label={`+${data.totalUnits.toLocaleString()}`} 
