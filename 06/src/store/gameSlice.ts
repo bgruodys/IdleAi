@@ -24,12 +24,9 @@ export interface Planet {
   discoveredAt: number;
 }
 
-export interface Reinforcement {
-  id: string;
-  type: string;
-  unitCount: number;
-  arrivedAt: number;
-}
+// Reinforcements are now grouped by type with counts
+// Format: { [type: string]: number } where number is the total unit count for that type
+export type Reinforcements = Record<string, number>;
 
 export interface SessionInfo {
   sessionId: string;
@@ -40,7 +37,7 @@ export interface SessionInfo {
 export interface GameState {
   player: Player | null;
   planet: Planet | null;
-  reinforcements: Reinforcement[];
+  reinforcements: Reinforcements; // Grouped by type: { "Imperial Guardsmen": 50, "Heavy Weapons Team": 20, ... }
   resources: Resources;
   gameStarted: boolean;
   lastReinforcementTime: number;
@@ -154,7 +151,7 @@ function getRankForExperience(experience: number): { rank: number; title: string
 const initialState: GameState = {
   player: null,
   planet: null,
-  reinforcements: [],
+  reinforcements: {}, // Empty object, reinforcements grouped by type
   resources: {
     credits: 0,
     munitions: 0,
@@ -201,7 +198,18 @@ const gameSlice = createSlice({
       const loadedState = action.payload;
       state.player = loadedState.player;
       state.planet = loadedState.planet;
-      state.reinforcements = loadedState.reinforcements || [];
+      // Handle migration from old array format to new grouped format
+      if (Array.isArray(loadedState.reinforcements)) {
+        // Migrate old format: convert array to grouped object
+        state.reinforcements = {};
+        (loadedState.reinforcements as any[]).forEach((reinforcement: any) => {
+          if (reinforcement.type && reinforcement.unitCount) {
+            state.reinforcements[reinforcement.type] = (state.reinforcements[reinforcement.type] || 0) + reinforcement.unitCount;
+          }
+        });
+      } else {
+        state.reinforcements = loadedState.reinforcements || {};
+      }
       state.resources = loadedState.resources;
       state.gameStarted = loadedState.gameStarted;
       state.lastReinforcementTime = loadedState.lastReinforcementTime || Date.now();
@@ -228,18 +236,14 @@ const gameSlice = createSlice({
       const unitCount = Math.floor(Math.random() * 10) + 1;
       const now = Date.now();
       
-      state.reinforcements.push({
-        id: generateId(),
-        type,
-        unitCount,
-        arrivedAt: now,
-      });
+      // Add to existing count or create new entry
+      state.reinforcements[type] = (state.reinforcements[type] || 0) + unitCount;
       state.lastReinforcementTime = now;
     },
     resetGame: (state) => {
       state.player = null;
       state.planet = null;
-      state.reinforcements = [];
+      state.reinforcements = {};
       state.resources = {
         credits: 0,
         munitions: 0,

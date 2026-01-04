@@ -46,7 +46,7 @@ const AppContent: React.FC = () => {
       
       try {
         // Try to load saved game first
-        const savedState = loadGameStateFromStorage();
+        const savedState = await loadGameStateFromStorage();
         
         if (savedState && savedState.gameStarted && savedState.sessionInfo?.sessionId) {
           // Check for active session

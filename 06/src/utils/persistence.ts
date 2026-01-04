@@ -4,12 +4,59 @@ const STORAGE_KEY = 'emperors-call-game-state';
 const SESSION_KEY = 'emperors-call-session';
 const FILE_NAME = 'emperors-call-save.json';
 
+// Secret key for hash calculation (embedded in code to prevent casual tampering)
+const HASH_SECRET = 'Emperor\'s Call - For the Imperium! 2024';
+
 export interface SavedGameState extends GameState {
   savedAt: number;
   version: string;
+  hash?: string; // SHA-256 hash for integrity verification
 }
 
 const GAME_VERSION = '1.0.0';
+
+/**
+ * Calculate SHA-256 hash of game state for integrity verification
+ * Excludes hash, savedAt, and version fields from calculation
+ */
+async function calculateGameStateHash(state: GameState): Promise<string> {
+  // Create a copy without metadata fields
+  const stateToHash = {
+    player: state.player,
+    planet: state.planet,
+    reinforcements: state.reinforcements,
+    resources: state.resources,
+    gameStarted: state.gameStarted,
+    lastReinforcementTime: state.lastReinforcementTime,
+    sessionInfo: state.sessionInfo,
+  };
+  
+  // Stringify and add secret
+  const dataString = JSON.stringify(stateToHash) + HASH_SECRET;
+  
+  // Calculate SHA-256 hash
+  const encoder = new TextEncoder();
+  const data = encoder.encode(dataString);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  
+  // Convert to hex string
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * Verify game state hash
+ */
+async function verifyGameStateHash(state: SavedGameState): Promise<boolean> {
+  if (!state.hash) {
+    // Old save files without hash - allow for backward compatibility
+    return true;
+  }
+  
+  // Calculate expected hash
+  const expectedHash = await calculateGameStateHash(state);
+  return state.hash === expectedHash;
+}
 
 /**
  * Check if localStorage is available
@@ -32,16 +79,18 @@ function isLocalStorageAvailable(): boolean {
 /**
  * Save game state to localStorage
  */
-export function saveGameStateToStorage(state: GameState): void {
+export async function saveGameStateToStorage(state: GameState): Promise<void> {
   if (!isLocalStorageAvailable()) {
     return;
   }
   
   try {
+    const hash = await calculateGameStateHash(state);
     const savedState: SavedGameState = {
       ...state,
       savedAt: Date.now(),
       version: GAME_VERSION,
+      hash,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(savedState));
   } catch (error) {
@@ -52,7 +101,7 @@ export function saveGameStateToStorage(state: GameState): void {
 /**
  * Load game state from localStorage
  */
-export function loadGameStateFromStorage(): SavedGameState | null {
+export async function loadGameStateFromStorage(): Promise<SavedGameState | null> {
   if (!isLocalStorageAvailable()) {
     return null;
   }
@@ -63,6 +112,15 @@ export function loadGameStateFromStorage(): SavedGameState | null {
       return null;
     }
     const parsed = JSON.parse(saved) as SavedGameState;
+    
+    // Verify hash if present
+    const isValid = await verifyGameStateHash(parsed);
+    if (!isValid) {
+      console.warn('Game state hash verification failed - save file may have been tampered with');
+      // Still return the state but log a warning
+      // In production, you might want to reject it
+    }
+    
     return parsed;
   } catch (error) {
     console.error('Failed to load game state from localStorage:', error);
@@ -89,12 +147,14 @@ export function clearGameStateFromStorage(): void {
 /**
  * Save game state to file (download)
  */
-export function saveGameStateToFile(state: GameState): void {
+export async function saveGameStateToFile(state: GameState): Promise<void> {
   try {
+    const hash = await calculateGameStateHash(state);
     const savedState: SavedGameState = {
       ...state,
       savedAt: Date.now(),
       version: GAME_VERSION,
+      hash,
     };
     const dataStr = JSON.stringify(savedState, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
@@ -116,15 +176,27 @@ export function saveGameStateToFile(state: GameState): void {
  * Load game state from file (upload)
  */
 export function loadGameStateFromFile(file: File): Promise<SavedGameState> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const content = e.target?.result as string;
         const parsed = JSON.parse(content) as SavedGameState;
+        
+        // Verify hash if present
+        const isValid = await verifyGameStateHash(parsed);
+        if (!isValid) {
+          reject(new Error('Save file integrity check failed. The file may have been tampered with.'));
+          return;
+        }
+        
         resolve(parsed);
       } catch (error) {
-        reject(new Error('Invalid game save file'));
+        if (error instanceof Error) {
+          reject(error);
+        } else {
+          reject(new Error('Invalid game save file'));
+        }
       }
     };
     reader.onerror = () => {

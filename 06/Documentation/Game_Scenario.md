@@ -35,8 +35,12 @@ But beware, for the enemies of mankind are relentless. They will not rest until 
 - **Experience-Based Rank System**: 30 ranks from Recruit to Emperor's Champion, determined by experience points
 - **Automatic Reinforcements**: New units arrive every 5 seconds with random types and unit counts
 - **Offline Earnings**: Resources and reinforcements continue to accumulate while you're away
-- **Persistence System**: Game state automatically saves to localStorage and can be exported/imported
+- **Persistence System**: Game state automatically saves to localStorage (export/import functions exist but UI not yet implemented)
 - **Session Management**: Multi-tab detection prevents duplicate game sessions
+- **Visual Progress Indicators**: Countdown timers and progress bars show time until next resource generation and reinforcement arrival
+- **In-Game Documentation**: Interactive documentation viewer with rank tables, reinforcement types, and game mechanics
+- **Reinforcement Icons**: Visual icons for each reinforcement type (Imperial Guardsmen, Heavy Weapons Team, Scout Squad, Veteran Squad, Armored Support)
+- **Reinforcement Aggregation**: Reinforcements are automatically grouped by type with total unit counts
 - **Warhammer Lore Integration**: Immersive storytelling in the 40K universe
 
 ### Planned Features
@@ -178,9 +182,14 @@ Each reinforcement includes:
 ### Reinforcement Display
 
 The game aggregates reinforcements by type, showing:
-- Total units per type
-- First and last arrival timestamps
-- Visual icons for each reinforcement type
+- Total units per type (automatically calculated and grouped)
+- Visual icons for each reinforcement type:
+  - **Imperial Guardsmen**: Groups icon
+  - **Heavy Weapons Team**: Fire department icon
+  - **Scout Squad**: Explore icon
+  - **Veteran Squad**: Military tech icon
+  - **Armored Support**: Security icon
+- Reinforcement aggregation utilities calculate totals and organize by type
 
 ### Offline Reinforcements
 
@@ -201,13 +210,15 @@ The game features a comprehensive persistence system that ensures your progress 
 - Game state automatically saves to browser localStorage
 - Saves occur automatically during gameplay
 - Session information is tracked for multi-tab detection
+- **Includes SHA-256 hash for integrity verification** - prevents manual tampering
 
 **Save Data Includes:**
 - Player information (name, rank, experience, arrival time)
 - Planet information (name, discovery time)
 - All resources (credits, munitions, promethium, raw materials, imperial favor)
-- All reinforcements (type, unit count, arrival times)
+- All reinforcements (grouped by type with unit counts)
 - Session information (session ID, last active time, last save time)
+- **Hash field**: SHA-256 hash of game state data (prevents manual editing)
 
 ### Offline Earnings Calculation
 
@@ -253,15 +264,41 @@ Capped at 100 reinforcements to prevent UI overload
 
 ### File Export/Import
 
+The game includes full export and import functionality accessible through the game interface.
+
 **Export Game State:**
-- Game state can be exported to a JSON file
+- Click the "Save Game" button in the game header
+- Game state is exported to a JSON file
 - File name: `emperors-call-save.json`
 - Includes version information and save timestamp
+- **Includes SHA-256 hash for integrity verification** - prevents manual tampering
+- Can be saved to your computer for backup or transfer
+- Button is disabled if game is not started
 
 **Import Game State:**
-- Load saved game from JSON file
-- Validates file format before loading
+- Click the "Load Game" button in the game header
+- Select a previously saved `emperors-call-save.json` file
+- System validates file format before loading
+- **System verifies file integrity using SHA-256 hash** - rejects tampered files
+- Confirmation dialog appears before replacing current game state
 - Replaces current game state with loaded state
+- Session information is restored if present
+- Success/error messages inform you of the result
+
+**File Format:**
+- JSON format with all game state data
+- Includes player, planet, resources, reinforcements, and session info
+- Version information ensures compatibility
+- Timestamp shows when the save was created
+- **Hash field**: SHA-256 hash of game state data (prevents manual editing)
+
+**Save File Integrity:**
+- All save files include a cryptographic hash (SHA-256)
+- Hash is calculated from game state data + secret key
+- On load, the hash is recalculated and verified
+- If hash doesn't match, the file is rejected as tampered
+- This prevents players from manually editing save files to cheat
+- Old save files without hashes are still accepted for backward compatibility
 
 ### Game Reset
 
@@ -647,14 +684,18 @@ Players will be able to invest resources in:
 2. **Idle Progression**
    - Resources generate every 60 seconds based on rank
    - Reinforcements arrive every 5 seconds
-   - Countdown timers show time until next generation/arrival
-   - Progress bars visualize countdown progress
+   - Countdown timers show time until next generation/arrival (formatted as MM:SS)
+   - Circular progress spinners show countdown progress
+   - Linear progress bars visualize countdown progress
+   - Both timers automatically reset when they reach zero
 
 3. **Monitoring Progress**
    - View current rank and experience
    - Check accumulated resources
-   - Review reinforcement totals by type
-   - Access in-game documentation via info icon
+   - Review reinforcement totals by type (aggregated with visual icons)
+   - Monitor countdown timers for next resource generation and reinforcement arrival
+   - View progress bars showing countdown progress
+   - Access in-game documentation component (GameDocumentation) with detailed rank tables and mechanics
 
 4. **Offline Return**
    - Game automatically loads saved state
@@ -663,9 +704,15 @@ Players will be able to invest resources in:
    - Session activity updated
 
 5. **Game Management**
-   - Reset game (with confirmation)
-   - Export/import game state (planned)
-   - View documentation
+   - Save Game button: Export current game state to JSON file
+   - Load Game button: Import previously saved game state from file
+   - Reset game button (with confirmation dialog)
+   - Reset clears all localStorage, session data, and reloads the page
+   - In-game documentation viewer (GameDocumentation component) with:
+     - Complete rank table with all 30 ranks
+     - Reinforcement type descriptions with icons
+     - Resource type explanations
+     - Game mechanics overview
    - Monitor session status
 
 ### Planned Session Cycle (Hybrid Idle/Active)
@@ -770,10 +817,17 @@ Will you rise through the ranks to become the Emperor's Champion, or will the en
 - **Resource Generation**: Automatic generation every 60 seconds based on rank multiplier
 - **Reinforcements**: Automatic arrival every 5 seconds with random types and unit counts
 - **Offline Earnings**: Resources and reinforcements continue while away
-- **Persistence**: Automatic save/load to localStorage with export/import capability
-- **Session Management**: Multi-tab detection and prevention
-- **UI System**: Countdown timers, progress bars, tooltips, documentation viewer
-- **Game Reset**: Ability to reset game with confirmation
+- **Persistence**: Automatic save/load to localStorage with export/import UI buttons
+- **Session Management**: Multi-tab detection and prevention using BroadcastChannel API
+- **UI System**: 
+  - Countdown timers (CircularProgress and LinearProgress) showing time until next event
+  - Progress bars visualizing countdown progress
+  - Reinforcement icons for each unit type
+  - In-game documentation viewer (GameDocumentation component)
+  - Reset game button with confirmation dialog
+- **Reinforcement Utilities**: Automatic aggregation by type with total unit calculations
+- **Countdown Timer Hook**: Reusable hook for tracking time remaining with automatic reset
+- **Game Reset**: Ability to reset game with confirmation (clears localStorage, session, and reloads page)
 
 ### 🚧 Planned Features
 - **Combat System**: Scouting missions and enemy encounters

@@ -4,7 +4,7 @@ describe('gameSlice', () => {
   const initialState: GameState = {
     player: null,
     planet: null,
-    reinforcements: [],
+    reinforcements: {},
     resources: {
       credits: 0,
       munitions: 0,
@@ -60,7 +60,7 @@ describe('gameSlice', () => {
   });
 
   describe('addReinforcement', () => {
-    it('should add a reinforcement to the list', () => {
+    it('should add a reinforcement to the grouped structure', () => {
       const startedState: GameState = {
         ...initialState,
         gameStarted: true,
@@ -69,6 +69,7 @@ describe('gameSlice', () => {
           name: 'Test Commander',
           rank: 1,
           rankTitle: 'Recruit',
+          experience: 0,
           arrivedAt: Date.now(),
         },
         planet: {
@@ -82,16 +83,18 @@ describe('gameSlice', () => {
       const action = addReinforcement();
       const state = gameReducer(startedState, action);
 
-      expect(state.reinforcements).toHaveLength(1);
-      expect(state.reinforcements[0].id).toBeTruthy();
-      expect(state.reinforcements[0].type).toBeTruthy();
-      expect(state.reinforcements[0].unitCount).toBeGreaterThan(0);
-      expect(state.reinforcements[0].unitCount).toBeLessThanOrEqual(10);
-      expect(state.reinforcements[0].arrivedAt).toBe(Date.now());
+      // Should have at least one type with units
+      const reinforcementTypes = Object.keys(state.reinforcements);
+      expect(reinforcementTypes.length).toBeGreaterThan(0);
+      
+      // Check that the type has a valid unit count
+      const firstType = reinforcementTypes[0];
+      expect(state.reinforcements[firstType]).toBeGreaterThan(0);
+      expect(state.reinforcements[firstType]).toBeLessThanOrEqual(10);
       expect(state.lastReinforcementTime).toBe(Date.now());
     });
 
-    it('should add multiple reinforcements', () => {
+    it('should add multiple reinforcements and group by type', () => {
       const startedState: GameState = {
         ...initialState,
         gameStarted: true,
@@ -100,6 +103,7 @@ describe('gameSlice', () => {
           name: 'Test Commander',
           rank: 1,
           rankTitle: 'Recruit',
+          experience: 0,
           arrivedAt: Date.now(),
         },
         planet: {
@@ -115,9 +119,11 @@ describe('gameSlice', () => {
       state = gameReducer(state, addReinforcement());
       state = gameReducer(state, addReinforcement());
 
-      expect(state.reinforcements).toHaveLength(3);
-      expect(state.reinforcements[0].id).not.toBe(state.reinforcements[1].id);
-      expect(state.reinforcements[1].id).not.toBe(state.reinforcements[2].id);
+      // Should have at least one type with units
+      const totalUnits = Object.values(state.reinforcements).reduce((sum, count) => sum + count, 0);
+      expect(totalUnits).toBeGreaterThan(0);
+      // Each reinforcement adds 1-10 units, so 3 reinforcements should add at least 3 units
+      expect(totalUnits).toBeGreaterThanOrEqual(3);
     });
 
     it('should update lastReinforcementTime', () => {
@@ -129,6 +135,7 @@ describe('gameSlice', () => {
           name: 'Test Commander',
           rank: 1,
           rankTitle: 'Recruit',
+          experience: 0,
           arrivedAt: Date.now(),
         },
         planet: {
@@ -164,14 +171,9 @@ describe('gameSlice', () => {
           name: 'Test Planet',
           discoveredAt: Date.now(),
         },
-        reinforcements: [
-          {
-            id: 'reinforcement-1',
-            type: 'Guardsmen',
-            unitCount: 5,
-            arrivedAt: Date.now(),
-          },
-        ],
+        reinforcements: {
+          'Imperial Guardsmen': 5,
+        },
         resources: {
           credits: 1000,
           munitions: 500,
@@ -199,7 +201,7 @@ describe('gameSlice', () => {
       expect(state.gameStarted).toBe(false);
       expect(state.player).toBeNull();
       expect(state.planet).toBeNull();
-      expect(state.reinforcements).toHaveLength(0);
+      expect(Object.keys(state.reinforcements).length).toBe(0);
       expect(state.lastReinforcementTime).toBe(0);
     });
   });

@@ -18,9 +18,10 @@ import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { resetGame } from '../store/gameSlice';
 import { aggregateReinforcementsByType, calculateTotalReinforcements } from '../utils/reinforcementUtils';
 import { ReinforcementIcon } from '../utils/reinforcementIcons';
-import { clearGameStateFromStorage, clearSession } from '../utils/persistence';
+import { clearGameStateFromStorage, clearSession, saveGameStateToFile, loadGameStateFromFile, setActiveSession } from '../utils/persistence';
 import { cleanupSessionManager } from '../utils/sessionManager';
 import { useCountdownTimer, formatTime } from '../hooks/useCountdownTimer';
+import { loadGame } from '../store/gameSlice';
 
 const RESOURCE_INTERVAL = 60000; // 60 seconds
 const REINFORCEMENT_INTERVAL = 5000; // 5 seconds
@@ -30,6 +31,7 @@ export const GameData: React.FC = () => {
   const gameState = useAppSelector((state) => state.game);
   const { gameStarted, player, planet, reinforcements, resources, sessionInfo } = gameState || {};
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Calculate time until next resource generation (60 seconds)
   const resourceTimeRemaining = useCountdownTimer(RESOURCE_INTERVAL, gameStarted);
@@ -67,6 +69,69 @@ export const GameData: React.FC = () => {
     setResetDialogOpen(false);
   };
 
+  const handleSaveGame = async () => {
+    try {
+      if (!gameStarted) {
+        alert('Game not started. Cannot save.');
+        return;
+      }
+      await saveGameStateToFile(gameState);
+    } catch (error) {
+      console.error('Failed to save game:', error);
+      alert('Failed to save game. Please try again.');
+    }
+  };
+
+  const handleLoadGame = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const loadedState = await loadGameStateFromFile(file);
+      
+      // Validate loaded state
+      if (!loadedState.gameStarted || !loadedState.player || !loadedState.planet) {
+        alert('Invalid game save file. The file does not contain a valid game state.');
+        return;
+      }
+
+      // Confirm before loading
+      const confirmed = window.confirm(
+        'Loading a saved game will replace your current game state. Are you sure you want to continue?'
+      );
+
+      if (!confirmed) {
+        // Reset file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
+
+      // Load the game state
+      dispatch(loadGame(loadedState));
+      
+      // Update session if session info exists
+      if (loadedState.sessionInfo) {
+        setActiveSession(loadedState.sessionInfo.sessionId);
+      }
+
+      alert('Game loaded successfully!');
+    } catch (error) {
+      console.error('Failed to load game:', error);
+      alert(error instanceof Error ? error.message : 'Failed to load game. Please check the file and try again.');
+    } finally {
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   if (!gameStarted) {
     return (
       <Box p={2}>
@@ -75,8 +140,8 @@ export const GameData: React.FC = () => {
     );
   }
 
-  const aggregatedReinforcements = aggregateReinforcementsByType(reinforcements || []);
-  const totalUnits = calculateTotalReinforcements(reinforcements || []);
+  const aggregatedReinforcements = aggregateReinforcementsByType(reinforcements || {});
+  const totalUnits = calculateTotalReinforcements(reinforcements || {});
 
   return (
     <Box p={2}>
@@ -84,15 +149,43 @@ export const GameData: React.FC = () => {
         <Typography variant="h4">
           The Emperor's Call
         </Typography>
-        <Button
-          variant="outlined"
-          color="error"
-          onClick={handleResetClick}
-          sx={{ minWidth: 120 }}
-        >
-          Reset Game
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={handleSaveGame}
+            disabled={!gameStarted}
+            sx={{ minWidth: 120 }}
+          >
+            Save Game
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={handleLoadGame}
+            sx={{ minWidth: 120 }}
+          >
+            Load Game
+          </Button>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={handleResetClick}
+            sx={{ minWidth: 120 }}
+          >
+            Reset Game
+          </Button>
+        </Box>
       </Box>
+      
+      {/* Hidden file input for loading game */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept=".json"
+        style={{ display: 'none' }}
+      />
 
       <Grid container spacing={3}>
         {/* Player Information */}
