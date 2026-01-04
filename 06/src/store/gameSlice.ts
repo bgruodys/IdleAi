@@ -135,18 +135,6 @@ function generatePlanetName(): string {
   return `${prefix} ${suffix}`;
 }
 
-function getRankForExperience(experience: number): { rank: number; title: string } {
-  for (let i = RANK_DATA_EXPORT.length - 1; i >= 0; i--) {
-    if (experience >= RANK_DATA_EXPORT[i].experienceRequired) {
-      return {
-        rank: RANK_DATA_EXPORT[i].rank,
-        title: RANK_DATA_EXPORT[i].title,
-      };
-    }
-  }
-  return { rank: 1, title: 'Recruit' };
-}
-
 // Initial state
 const initialState: GameState = {
   player: null,

@@ -15,13 +15,14 @@ describe('persistence', () => {
   });
 
   describe('Game State Storage', () => {
-    it('should save and load game state', () => {
+    it('should save and load game state', async () => {
       const gameState: GameState = {
         player: {
           id: 'player-1',
           name: 'Test Commander',
           rank: 3,
           rankTitle: 'Veteran Guardsman',
+          experience: 0,
           arrivedAt: Date.now(),
         },
         planet: {
@@ -29,7 +30,7 @@ describe('persistence', () => {
           name: 'Test Planet',
           discoveredAt: Date.now(),
         },
-        reinforcements: [],
+        reinforcements: {},
         resources: {
           credits: 1000,
           munitions: 500,
@@ -46,8 +47,8 @@ describe('persistence', () => {
         },
       };
 
-      saveGameStateToStorage(gameState);
-      const loaded = loadGameStateFromStorage();
+      await saveGameStateToStorage(gameState);
+      const loaded = await loadGameStateFromStorage();
 
       expect(loaded).not.toBeNull();
       expect(loaded?.player?.id).toBe(gameState.player?.id);
@@ -55,20 +56,22 @@ describe('persistence', () => {
       expect(loaded?.planet?.name).toBe(gameState.planet?.name);
       expect(loaded?.resources.credits).toBe(gameState.resources.credits);
       expect(loaded?.gameStarted).toBe(true);
+      expect(loaded?.hash).toBeDefined(); // Hash should be present
     });
 
-    it('should return null when no saved state exists', () => {
-      const loaded = loadGameStateFromStorage();
+    it('should return null when no saved state exists', async () => {
+      const loaded = await loadGameStateFromStorage();
       expect(loaded).toBeNull();
     });
 
-    it('should clear game state', () => {
+    it('should clear game state', async () => {
       const gameState: GameState = {
         player: {
           id: 'player-1',
           name: 'Test',
           rank: 1,
           rankTitle: 'Recruit',
+          experience: 0,
           arrivedAt: Date.now(),
         },
         planet: {
@@ -76,7 +79,7 @@ describe('persistence', () => {
           name: 'Test',
           discoveredAt: Date.now(),
         },
-        reinforcements: [],
+        reinforcements: {},
         resources: {
           credits: 0,
           munitions: 0,
@@ -93,9 +96,9 @@ describe('persistence', () => {
         },
       };
 
-      saveGameStateToStorage(gameState);
+      await saveGameStateToStorage(gameState);
       clearGameStateFromStorage();
-      const loaded = loadGameStateFromStorage();
+      const loaded = await loadGameStateFromStorage();
 
       expect(loaded).toBeNull();
     });
@@ -157,7 +160,4 @@ describe('persistence', () => {
     });
   });
 });
-
-
-
 

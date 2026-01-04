@@ -13,7 +13,7 @@ const createTestStore = (initialState: any) => {
       game: {
         player: null,
         planet: null,
-        reinforcements: [],
+        reinforcements: {},
         resources: {
           credits: 0,
           munitions: 0,
@@ -134,20 +134,10 @@ describe('GameData', () => {
         name: 'Test Planet',
         discoveredAt: Date.now(),
       },
-      reinforcements: [
-        {
-          id: 'reinforcement-1',
-          type: 'Imperial Guardsmen',
-          unitCount: 5,
-          arrivedAt: Date.now(),
-        },
-        {
-          id: 'reinforcement-2',
-          type: 'Heavy Weapons Team',
-          unitCount: 3,
-          arrivedAt: Date.now(),
-        },
-      ],
+      reinforcements: {
+        'Imperial Guardsmen': 5,
+        'Heavy Weapons Team': 3,
+      },
       lastReinforcementTime: Date.now(),
     });
 
@@ -178,26 +168,9 @@ describe('GameData', () => {
         name: 'Test Planet',
         discoveredAt: now,
       },
-      reinforcements: [
-        {
-          id: 'reinforcement-1',
-          type: 'Imperial Guardsmen',
-          unitCount: 5,
-          arrivedAt: now,
-        },
-        {
-          id: 'reinforcement-2',
-          type: 'Imperial Guardsmen',
-          unitCount: 8,
-          arrivedAt: now + 5000,
-        },
-        {
-          id: 'reinforcement-3',
-          type: 'Imperial Guardsmen',
-          unitCount: 3,
-          arrivedAt: now + 10000,
-        },
-      ],
+      reinforcements: {
+        'Imperial Guardsmen': 16, // 5 + 8 + 3
+      },
       resources: {
         credits: 0,
         munitions: 0,

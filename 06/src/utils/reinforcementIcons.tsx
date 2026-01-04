@@ -15,9 +15,9 @@ const REINFORCEMENT_ICONS: Record<string, SvgIconComponent> = {
 };
 
 /**
- * Get icon component for a reinforcement type
+ * Get icon component for a reinforcement type (internal use)
  */
-export function getReinforcementIcon(type: string): SvgIconComponent | null {
+function getReinforcementIcon(type: string): SvgIconComponent | null {
   return REINFORCEMENT_ICONS[type] || null;
 }
 
@@ -33,7 +33,5 @@ export function ReinforcementIcon({ type }: { type: string }): React.ReactElemen
   
   return <IconComponent />;
 }
-
-
 
 

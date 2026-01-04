@@ -19,7 +19,7 @@ describe('offlineEarnings', () => {
       const gameState: GameState = {
         player: null,
         planet: null,
-        reinforcements: [],
+        reinforcements: {},
         resources: {
           credits: 0,
           munitions: 0,
@@ -45,10 +45,11 @@ describe('offlineEarnings', () => {
           name: 'Test',
           rank: 1,
           rankTitle: 'Recruit',
+          experience: 0,
           arrivedAt: Date.now(),
         },
         planet: null,
-        reinforcements: [],
+        reinforcements: {},
         resources: {
           credits: 0,
           munitions: 0,
@@ -76,7 +77,7 @@ describe('offlineEarnings', () => {
           arrivedAt: now,
         },
         planet: null,
-        reinforcements: [],
+        reinforcements: {},
         resources: {
           credits: 0,
           munitions: 0,
@@ -110,7 +111,7 @@ describe('offlineEarnings', () => {
           arrivedAt: oneHourAgo,
         },
         planet: null,
-        reinforcements: [],
+        reinforcements: {},
         resources: {
           credits: 0,
           munitions: 0,
@@ -150,7 +151,7 @@ describe('offlineEarnings', () => {
           arrivedAt: twoHoursAgo,
         },
         planet: null,
-        reinforcements: [],
+        reinforcements: {},
         resources: {
           credits: 0,
           munitions: 0,
