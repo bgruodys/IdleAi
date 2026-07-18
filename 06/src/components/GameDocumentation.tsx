@@ -13,34 +13,125 @@ import {
   TableHead,
   TableRow,
   Chip,
-  Tooltip,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { RANK_DATA_EXPORT, REINFORCEMENT_TYPES_EXPORT, getRankMultiplier } from '../store/gameSlice';
+import { RANK_DATA_EXPORT, REINFORCEMENT_TYPES_EXPORT, getRankMultiplier, getAvailableReinforcementTypes } from '../store/gameSlice';
 import { ReinforcementIcon } from '../utils/reinforcementIcons';
 
 // Rank descriptions are now in RANK_DATA_EXPORT
 
-const REINFORCEMENT_DESCRIPTIONS: Record<string, string> = {
-  'Imperial Guardsmen': 'Standard infantry units, the backbone of the Imperial Guard',
-  'Heavy Weapons Team': 'Specialized units equipped with heavy weapons for sustained firepower',
-  'Scout Squad': 'Elite reconnaissance units for forward observation and intelligence gathering',
-  'Veteran Squad': 'Battle-hardened veterans with superior combat experience',
-  'Armored Support': 'Heavy armored vehicles providing mobile firepower and protection',
-};
+/**
+ * Generate description for a reinforcement type based on its category
+ */
+function getReinforcementDescription(type: string): string {
+  const lowerType = type.toLowerCase();
+  
+  // Medical personnel
+  if (lowerType.includes('medic') || lowerType.includes('surgeon') || 
+      lowerType.includes('apothecary') || lowerType.includes('healer') ||
+      lowerType.includes('medicae') || lowerType.includes('pharmaceutical')) {
+    return 'Medical personnel providing essential healthcare and battlefield medicine to Imperial forces';
+  }
+  
+  // Scientists and researchers
+  if (lowerType.includes('scientist') || lowerType.includes('researcher') ||
+      lowerType.includes('biologis') || lowerType.includes('chemist') ||
+      lowerType.includes('xenobiologist') || lowerType.includes('xenologist') ||
+      lowerType.includes('archaeologist') || lowerType.includes('analyst') ||
+      lowerType.includes('genetor') || lowerType.includes('magos') ||
+      lowerType.includes('explorator') || lowerType.includes('archmagos') ||
+      lowerType.includes('tech-priest') || lowerType.includes('data specialist') ||
+      lowerType.includes('laboratory')) {
+    return 'Scientific personnel conducting research, analysis, and technological advancement for the Imperium';
+  }
+  
+  // Engineers and technicians
+  if (lowerType.includes('engineer') || lowerType.includes('enginseer') ||
+      lowerType.includes('mechanic') || lowerType.includes('technician') ||
+      lowerType.includes('armorer') || lowerType.includes('weaponsmith') ||
+      lowerType.includes('tech-adept') || lowerType.includes('servitor') ||
+      lowerType.includes('cybernetics') || lowerType.includes('maintenance')) {
+    return 'Technical specialists maintaining and repairing equipment, vehicles, and weapons systems';
+  }
+  
+  // Workers and laborers
+  if (lowerType.includes('worker') || lowerType.includes('laborer') ||
+      lowerType.includes('miner') || lowerType.includes('construction') ||
+      lowerType.includes('factory') || lowerType.includes('refinery') ||
+      lowerType.includes('quarry') || lowerType.includes('lumberjack') ||
+      lowerType.includes('farmer') || lowerType.includes('harvester') ||
+      lowerType.includes('loader') || lowerType.includes('dock') ||
+      lowerType.includes('warehouse') || lowerType.includes('smelter') ||
+      lowerType.includes('forge') || lowerType.includes('assembly') ||
+      lowerType.includes('inspector')) {
+    return 'Industrial workers and laborers essential for resource extraction, construction, and manufacturing';
+  }
+  
+  // Administrators and support staff
+  if (lowerType.includes('clerk') || lowerType.includes('administrator') ||
+      lowerType.includes('quartermaster') || lowerType.includes('supply') ||
+      lowerType.includes('logistics') || lowerType.includes('records') ||
+      lowerType.includes('accountant') || lowerType.includes('scribe') ||
+      lowerType.includes('archivist') || lowerType.includes('messenger') ||
+      lowerType.includes('courier') || lowerType.includes('cook') ||
+      lowerType.includes('chef') || lowerType.includes('inventory') ||
+      lowerType.includes('diplomat') || lowerType.includes('interpreter')) {
+    return 'Administrative and support personnel managing logistics, records, and essential services';
+  }
+  
+  // Specialists (navigators, psykers, etc.)
+  if (lowerType.includes('navigator') || lowerType.includes('astropath') ||
+      lowerType.includes('psyker') || lowerType.includes('interrogator') ||
+      lowerType.includes('inquisitorial') || lowerType.includes('arbites') ||
+      lowerType.includes('enforcer') || lowerType.includes('intelligence')) {
+    return 'Specialized personnel with unique abilities essential for Imperial operations';
+  }
+  
+  // Vehicle operators and pilots
+  if (lowerType.includes('pilot') || lowerType.includes('driver') ||
+      lowerType.includes('gunner') || lowerType.includes('operator') ||
+      lowerType.includes('crewman') || lowerType.includes('co-pilot')) {
+    return 'Vehicle crew members operating and maintaining Imperial war machines';
+  }
+  
+  // Scouts and reconnaissance
+  if (lowerType.includes('scout') || lowerType.includes('reconnaissance') ||
+      lowerType.includes('pathfinder') || lowerType.includes('observer') ||
+      lowerType.includes('infiltrator') || lowerType.includes('saboteur')) {
+    return 'Reconnaissance specialists gathering intelligence, observing enemy positions, and operating behind enemy lines';
+  }
+  
+  // Heavy weapons specialists
+  if (lowerType.includes('heavy') && (lowerType.includes('weapon') || lowerType.includes('gunner') || lowerType.includes('operator'))) {
+    return 'Heavy weapons specialists providing sustained firepower and anti-armor capabilities';
+  }
+  
+  // Officers and commanders
+  if (lowerType.includes('commissar') || lowerType.includes('commander') ||
+      lowerType.includes('officer') || lowerType.includes('sergeant') ||
+      lowerType.includes('corporal')) {
+    return 'Command personnel leading and coordinating Imperial forces in battle';
+  }
+  
+  // Elite combat units
+  if (lowerType.includes('veteran') || lowerType.includes('stormtrooper') ||
+      lowerType.includes('ogryn') || lowerType.includes('bullgryn')) {
+    return 'Elite combat units with superior training and battlefield experience';
+  }
+  
+  // Standard combat units - default
+  return 'Imperial Guard personnel serving the Emperor with unwavering loyalty and dedication';
+}
 
 export const GameDocumentation: React.FC = () => {
   const [expanded, setExpanded] = useState<string | false>('ranks');
 
-  const handleChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+  const handleChange = (panel: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : false);
   };
 
   return (
-    <Paper elevation={2} sx={{ p: 2 }}>
-      <Typography variant="h5" gutterBottom>
-        Game Documentation
-      </Typography>
+    <Box>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
         Learn about ranks, reinforcements, and game mechanics
       </Typography>
@@ -76,7 +167,7 @@ export const GameDocumentation: React.FC = () => {
                       </TableCell>
                       <TableCell>
                         <Chip 
-                          label={rankInfo.requiredExperience.toLocaleString()} 
+                          label={rankInfo.experienceRequired.toLocaleString()} 
                           size="small" 
                           color="info" 
                         />
@@ -113,13 +204,180 @@ export const GameDocumentation: React.FC = () => {
                       {type}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {REINFORCEMENT_DESCRIPTIONS[type] || 'No description available'}
+                      {getReinforcementDescription(type)}
                     </Typography>
                   </Box>
                 </Box>
               </Paper>
             ))}
           </Box>
+        </AccordionDetails>
+      </Accordion>
+
+      {/* Reinforcement Availability by Rank Section */}
+      <Accordion expanded={expanded === 'reinforcement-availability'} onChange={handleChange('reinforcement-availability')}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography variant="h6">Reinforcement Availability by Rank</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Reinforcement types are unlocked progressively as you advance in rank. Higher ranks gain access to more specialized and elite units.
+          </Typography>
+          
+          {/* Entry Level */}
+          <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Entry Level (Ranks 1-10)
+            </Typography>
+            <Chip 
+              label={`${getAvailableReinforcementTypes(10).length} types available`} 
+              color="primary" 
+              size="small" 
+              sx={{ mb: 2 }}
+            />
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              New recruits start with only the most basic units:
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {getAvailableReinforcementTypes(10).map((type) => (
+                <Chip
+                  key={type}
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <ReinforcementIcon type={type} />
+                      <span>{type}</span>
+                    </Box>
+                  }
+                  size="small"
+                  variant="outlined"
+                />
+              ))}
+            </Box>
+          </Paper>
+
+          {/* Junior NCO */}
+          <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Junior NCO (Ranks 11-20)
+            </Typography>
+            <Chip 
+              label={`${getAvailableReinforcementTypes(20).length} types available`} 
+              color="primary" 
+              size="small" 
+              sx={{ mb: 2 }}
+            />
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              As you prove your leadership capabilities, more combat units and basic support personnel become available:
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {getAvailableReinforcementTypes(20).map((type) => (
+                <Chip
+                  key={type}
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <ReinforcementIcon type={type} />
+                      <span>{type}</span>
+                    </Box>
+                  }
+                  size="small"
+                  variant="outlined"
+                />
+              ))}
+            </Box>
+          </Paper>
+
+          {/* Senior NCO */}
+          <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Senior NCO (Ranks 21-30)
+            </Typography>
+            <Chip 
+              label={`${getAvailableReinforcementTypes(30).length} types available`} 
+              color="primary" 
+              size="small" 
+              sx={{ mb: 2 }}
+            />
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Senior non-commissioned officers gain access to specialized weapons, advanced scouts, and technical support personnel:
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {getAvailableReinforcementTypes(30).map((type) => (
+                <Chip
+                  key={type}
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <ReinforcementIcon type={type} />
+                      <span>{type}</span>
+                    </Box>
+                  }
+                  size="small"
+                  variant="outlined"
+                />
+              ))}
+            </Box>
+          </Paper>
+
+          {/* Junior Officers */}
+          <Paper elevation={2} sx={{ p: 2, mb: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Junior Officers (Ranks 31-40)
+            </Typography>
+            <Chip 
+              label={`${getAvailableReinforcementTypes(40).length} types available`} 
+              color="primary" 
+              size="small" 
+              sx={{ mb: 2 }}
+            />
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Commissioned officers unlock elite combat units, heavy weapons teams, and advanced specialists:
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {getAvailableReinforcementTypes(40).map((type) => (
+                <Chip
+                  key={type}
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <ReinforcementIcon type={type} />
+                      <span>{type}</span>
+                    </Box>
+                  }
+                  size="small"
+                  variant="outlined"
+                />
+              ))}
+            </Box>
+          </Paper>
+
+          {/* Senior Officers */}
+          <Paper elevation={2} sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom>
+              Senior Officers (Ranks 41-50)
+            </Typography>
+            <Chip 
+              label={`${getAvailableReinforcementTypes(50).length} types available`} 
+              color="primary" 
+              size="small" 
+              sx={{ mb: 2 }}
+            />
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              At the highest ranks, you have access to the full might of the Imperial Guard, including all {getAvailableReinforcementTypes(50).length} unit types:
+            </Typography>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {getAvailableReinforcementTypes(50).map((type) => (
+                <Chip
+                  key={type}
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <ReinforcementIcon type={type} />
+                      <span>{type}</span>
+                    </Box>
+                  }
+                  size="small"
+                  variant="outlined"
+                />
+              ))}
+            </Box>
+          </Paper>
         </AccordionDetails>
       </Accordion>
 
@@ -211,7 +469,7 @@ export const GameDocumentation: React.FC = () => {
           </Box>
         </AccordionDetails>
       </Accordion>
-    </Paper>
+    </Box>
   );
 };
 

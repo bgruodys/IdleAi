@@ -33,7 +33,7 @@ But beware, for the enemies of mankind are relentless. They will not rest until 
 
 ### Key Features (Currently Implemented)
 - **Idle Resource Generation**: Resources flow automatically every 60 seconds based on your rank multiplier
-- **Experience-Based Rank System**: 30 ranks from Recruit to Emperor's Champion, determined by experience points
+- **Experience-Based Rank System**: 50 ranks from Recruit to Emperor's Champion, determined by experience points
 - **Automatic Reinforcements**: New units arrive every 5 seconds with random types and unit counts
 - **Offline Earnings**: Resources and reinforcements continue to accumulate while you're away
 - **Persistence System**: Game state automatically saves to localStorage (export/import functions exist but UI not yet implemented)
@@ -93,40 +93,84 @@ Minimum: 1.0x (Rank 1)
 
 This means each rank increases the multiplier by 0.15x, providing smooth progression.
 
-### Complete Rank Tiers (30 Ranks)
+### Complete Rank Tiers (50 Ranks)
+
+The rank system has been expanded to provide more granular progression, especially at the lower levels, allowing for more frequent early-game achievements and a smoother progression curve.
+
+#### Entry Level (Ranks 1-10) - Very Low XP Requirements
 
 | Rank | Title | Required Experience | Multiplier | Description |
 |------|-------|---------------------|------------|-------------|
 | 1 | Recruit | 0 | 1.00x | Fresh from the training grounds |
-| 2 | Guardsman | 100 | 1.15x | Proven yourself in basic combat |
-| 3 | Veteran Guardsman | 250 | 1.30x | Experienced in planetary warfare |
-| 4 | Corporal | 500 | 1.45x | First step into leadership |
-| 5 | Sergeant | 1,000 | 1.60x | Leading small squads effectively |
-| 6 | Staff Sergeant | 1,750 | 1.75x | Senior non-commissioned officer |
-| 7 | Master Sergeant | 2,750 | 1.90x | Elite squad leadership |
-| 8 | Sergeant Major | 4,000 | 2.05x | Highest enlisted rank |
-| 9 | Warrant Officer | 5,500 | 2.20x | Specialized technical expertise |
-| 10 | Chief Warrant Officer | 7,500 | 2.35x | Master of specialized fields |
-| 11 | Second Lieutenant | 10,000 | 2.50x | First commissioned officer rank |
-| 12 | Lieutenant | 13,500 | 2.65x | Commanding platoon-level operations |
-| 13 | First Lieutenant | 18,000 | 2.80x | Senior platoon commander |
-| 14 | Captain | 24,000 | 2.95x | Battalion leadership achieved |
-| 15 | Major | 32,000 | 3.10x | Regimental command authority |
-| 16 | Lieutenant Colonel | 42,000 | 3.25x | Battalion command |
-| 17 | Colonel | 55,000 | 3.40x | Brigade-level strategic planning |
-| 18 | Brigadier General | 72,000 | 3.55x | Brigade command |
-| 19 | Major General | 95,000 | 3.70x | Division command |
-| 20 | Lieutenant General | 125,000 | 3.85x | Corps command |
-| 21 | General | 165,000 | 4.00x | Planetary theater command |
-| 22 | Lord General | 220,000 | 4.15x | The Emperor's chosen commander |
-| 23 | Warmaster | 300,000 | 4.30x | Supreme military commander |
-| 24 | High Marshal | 400,000 | 4.45x | Master of multiple theaters |
-| 25 | Grand Marshal | 550,000 | 4.60x | Imperial military council member |
-| 26 | Lord Marshal | 750,000 | 4.75x | Sector-wide command authority |
-| 27 | Imperial Marshal | 1,000,000 | 4.90x | Regional command of multiple sectors |
-| 28 | Supreme Marshal | 1,350,000 | 5.05x | One of the Emperor's finest |
-| 29 | Marshal of the Imperium | 1,800,000 | 5.20x | Legendary commander |
-| 30 | Emperor's Champion | 2,500,000 | 5.35x | The ultimate honor, chosen by the Emperor Himself |
+| 2 | Trainee | 5 | 1.15x | Learning the basics of Imperial service |
+| 3 | Cadet | 12 | 1.30x | Completed initial training phase |
+| 4 | Private | 25 | 1.45x | First assignment to active duty |
+| 5 | Guardsman | 45 | 1.60x | Proven yourself in basic combat |
+| 6 | Experienced Guardsman | 75 | 1.75x | Survived your first engagements |
+| 7 | Battle-Tested Guardsman | 115 | 1.90x | Multiple successful missions completed |
+| 8 | Veteran Guardsman | 170 | 2.05x | Experienced in planetary warfare |
+| 9 | Hardened Guardsman | 240 | 2.20x | Seen combat across multiple battlefields |
+| 10 | Elite Guardsman | 330 | 2.35x | Among the finest rank-and-file soldiers |
+
+#### Junior NCO (Ranks 11-20) - Leadership Begins
+
+| Rank | Title | Required Experience | Multiplier | Description |
+|------|-------|---------------------|------------|-------------|
+| 11 | Lance Corporal | 440 | 2.50x | First step into leadership responsibilities |
+| 12 | Corporal | 580 | 2.65x | Leading small fire teams |
+| 13 | Senior Corporal | 750 | 2.80x | Proven leadership in combat |
+| 14 | Acting Sergeant | 960 | 2.95x | Temporary squad leadership |
+| 15 | Sergeant | 1,210 | 3.10x | Leading small squads effectively |
+| 16 | Sergeant First Class | 1,510 | 3.25x | Senior squad leader |
+| 17 | Staff Sergeant | 1,870 | 3.40x | Senior non-commissioned officer |
+| 18 | Gunnery Sergeant | 2,300 | 3.55x | Specialized weapons and tactics expert |
+| 19 | Master Sergeant | 2,810 | 3.70x | Elite squad leadership |
+| 20 | First Sergeant | 3,410 | 3.85x | Company-level senior NCO |
+
+#### Senior NCO (Ranks 21-30) - High-Level Enlisted Leadership
+
+| Rank | Title | Required Experience | Multiplier | Description |
+|------|-------|---------------------|------------|-------------|
+| 21 | Sergeant Major | 4,110 | 4.00x | Highest enlisted rank |
+| 22 | Command Sergeant Major | 4,930 | 4.15x | Battalion-level senior enlisted advisor |
+| 23 | Regimental Sergeant Major | 5,880 | 4.30x | Regiment-level senior enlisted |
+| 24 | Warrant Officer | 6,980 | 4.45x | Specialized technical expertise |
+| 25 | Chief Warrant Officer | 8,250 | 4.60x | Master of specialized fields |
+| 26 | Senior Chief Warrant Officer | 9,720 | 4.75x | Elite technical specialist |
+| 27 | Master Chief Warrant Officer | 11,420 | 4.90x | Supreme technical authority |
+| 28 | Second Lieutenant | 13,380 | 5.05x | First commissioned officer rank |
+| 29 | First Lieutenant | 15,630 | 5.20x | Platoon command authority |
+| 30 | Lieutenant | 18,200 | 5.35x | Commanding platoon-level operations |
+
+#### Junior Officers (Ranks 31-40) - Commissioned Officer Ranks
+
+| Rank | Title | Required Experience | Multiplier | Description |
+|------|-------|---------------------|------------|-------------|
+| 31 | Senior Lieutenant | 21,130 | 5.50x | Experienced platoon commander |
+| 32 | Captain | 24,460 | 5.65x | Company command achieved |
+| 33 | Senior Captain | 28,240 | 5.80x | Veteran company commander |
+| 34 | Major | 32,520 | 5.95x | Battalion leadership achieved |
+| 35 | Lieutenant Colonel | 37,360 | 6.10x | Battalion command |
+| 36 | Colonel | 42,820 | 6.25x | Regimental command authority |
+| 37 | Senior Colonel | 48,970 | 6.40x | Elite regimental commander |
+| 38 | Brigadier General | 55,880 | 6.55x | Brigade command |
+| 39 | Major General | 63,620 | 6.70x | Division command |
+| 40 | Lieutenant General | 72,270 | 6.85x | Corps command |
+
+#### Senior Officers (Ranks 41-50) - High Command
+
+| Rank | Title | Required Experience | Multiplier | Description |
+|------|-------|---------------------|------------|-------------|
+| 41 | General | 81,920 | 7.00x | Planetary theater command |
+| 42 | Lord General | 92,660 | 7.15x | The Emperor's chosen commander |
+| 43 | Warmaster | 104,600 | 7.30x | Supreme military commander |
+| 44 | High Marshal | 118,160 | 7.45x | Master of multiple theaters |
+| 45 | Grand Marshal | 133,380 | 7.60x | Imperial military council member |
+| 46 | Lord Marshal | 150,400 | 7.75x | Sector-wide command authority |
+| 47 | Imperial Marshal | 169,370 | 7.90x | Regional command of multiple sectors |
+| 48 | Supreme Marshal | 190,450 | 8.05x | One of the Emperor's finest |
+| 49 | Marshal of the Imperium | 213,810 | 8.20x | Legendary commander |
+| 50 | Emperor's Champion | 239,630 | 8.35x | The ultimate honor, chosen by the Emperor Himself |
 
 ### Rank Progression (Planned)
 
@@ -154,45 +198,134 @@ Reinforcements are the backbone of your Imperial forces. They arrive automatical
 - First reinforcement arrives immediately when the game starts
 - Reinforcements continue arriving even when you're away (offline)
 
+**Reinforcement Probability:**
+- **Infantry units** (Guardsmen, Troopers, etc.) have a **10x higher probability** of arriving compared to Scout units
+- This reflects the standard composition of Imperial Guard forces, where infantry forms the backbone
+- Scout units are rarer but provide valuable reconnaissance capabilities
+
 ### Reinforcement Types
 
 Each reinforcement includes:
-- **Random Type**: One of five possible unit types
+- **Random Type**: One of approximately 100 possible individual unit types (availability depends on rank)
 - **Random Unit Count**: 1-10 units per reinforcement
 - **Arrival Timestamp**: Recorded for tracking and offline calculations
 
-**Available Reinforcement Types:**
+### Rank-Based Reinforcement Availability
 
-1. **Imperial Guardsmen**
-   - Standard infantry units, the backbone of the Imperial Guard
-   - Most common reinforcement type
+Reinforcement types are unlocked progressively as you advance in rank. Higher ranks gain access to more specialized and elite units.
 
-2. **Heavy Weapons Team**
-   - Specialized units equipped with heavy weapons for sustained firepower
-   - Provides superior firepower
+#### Entry Level (Ranks 1-10)
+**Available Units (2 types):**
+- Imperial Guardsman
+- Scout
 
-3. **Scout Squad**
-   - Elite reconnaissance units for forward observation and intelligence gathering
-   - Specialized in reconnaissance
+New recruits start with only the most basic units. Focus on gaining experience to unlock more reinforcement types.
 
-4. **Veteran Squad**
-   - Battle-hardened veterans with superior combat experience
-   - Elite infantry units
+#### Junior NCO (Ranks 11-20)
+**Available Units (15+ types):**
+- All Entry Level units
+- Forward Scout, Reconnaissance Scout
+- Veteran Guardsman
+- Lasgun Trooper, Autogun Trooper, Shotgun Trooper
+- Grenadier, Sniper
+- Medicae, Field Medic
+- Laborer, Miner
+- Clerk
 
-5. **Armored Support**
-   - Heavy armored vehicles providing mobile firepower and protection
-   - Provides heavy firepower and protection
+As you prove your leadership capabilities, more combat units and basic support personnel become available.
+
+#### Senior NCO (Ranks 21-30)
+**Available Units (35+ types):**
+- All Junior NCO units
+- Heavy Weapons Specialist
+- Flamer Specialist, Plasma Gunner, Melta Gunner
+- Pathfinder, Stealth Scout, Urban Scout, Desert Scout, Jungle Scout, Combat Scout
+- Sergeant, Corporal
+- Field Surgeon, Combat Medic
+- Enginseer, Mechanic, Technician
+- Construction Worker, Factory Worker
+- Administrator, Quartermaster
+
+Senior non-commissioned officers gain access to specialized weapons, advanced scouts, and technical support personnel.
+
+#### Junior Officers (Ranks 31-40)
+**Available Units (60+ types):**
+- All Senior NCO units
+- Stormtrooper, Commissar
+- Elite Scout, Veteran Scout, Scout Sniper, Scout Marksman
+- Arctic Scout, Mountain Scout
+- Close Combat Specialist
+- Officer
+- Artillery Crewman, Mortar Operator, Heavy Bolter Gunner, Lascannon Operator
+- Apothecary, Trauma Surgeon
+- Tech-Priest, Biologis, Researcher
+- Vehicle Mechanic, Weaponsmith, Armorer
+- Refinery Worker
+- Supply Officer, Logistics Coordinator
+
+Commissioned officers unlock elite combat units, heavy weapons teams, and advanced specialists.
+
+#### Senior Officers (Ranks 41-50)
+**Available Units (All 130+ types):**
+- All unit types become available
+- Full access to all combat units, specialists, scientists, engineers, workers, administrators, and unique personnel
+
+At the highest ranks, you have access to the full might of the Imperial Guard, including rare specialists and elite units.
+
+**Unit Type Categories:**
+
+The Imperial forces consist of diverse personnel organized into several key categories:
+
+#### Combat Units (60+ types)
+The backbone of any Imperial operation, combat personnel include:
+- **Infantry**: Imperial Guardsman, Lasgun Trooper, Autogun Trooper, Shotgun Trooper, Bayonet Fighter
+- **Scouts & Reconnaissance**: Scout, Forward Scout, Reconnaissance Scout, Pathfinder, Stealth Scout, Urban Scout, Desert Scout, Jungle Scout, Arctic Scout, Mountain Scout, Combat Scout, Elite Scout, Veteran Scout, Scout Sniper, Scout Marksman, Scout Observer, Scout Infiltrator, Scout Saboteur
+- **Specialists**: Heavy Weapons Specialist, Sniper, Grenadier, Flamer Specialist, Plasma Gunner, Melta Gunner
+- **Elite Forces**: Commissar, Stormtrooper, Veteran Guardsman, Close Combat Specialist
+- **Leadership**: Sergeant, Corporal, Officer, Tank Commander
+- **Heavy Weapons**: Artillery Crewman, Mortar Operator, Missile Launcher Operator, Heavy Bolter Gunner, Lascannon Operator, Autocannon Gunner
+- **Auxiliary Forces**: Ratling Sniper, Ogryn, Bullgryn, Rough Rider, Cavalry Trooper
+- **Vehicle Crews**: Valkyrie Pilot, Valkyrie Gunner, Chimera Driver, Leman Russ Driver, Baneblade Crewman, Sentinel Pilot, Basilisk Crewman, Manticore Operator, Hydra Gunner
+
+#### Medical Personnel (10 types)
+Essential for maintaining the health and combat effectiveness of Imperial forces:
+- Medicae, Field Surgeon, Apothecary, Field Medic, Combat Medic, Trauma Surgeon, Biologis Medicae, Sanctioned Psyker Healer, Medical Orderly, Pharmaceutical Specialist
+
+#### Scientists & Researchers (16 types)
+Critical for technological advancement and understanding of threats:
+- Tech-Priest, Biologis, Chemist, Researcher, Xenobiologist, Archaeologist, Analyst, Data Specialist, Laboratory Technician, Research Assistant, Xenologist, Genetor, Magos Biologis, Magos Physic, Explorator, Archmagos
+
+#### Engineers & Technicians (18 types)
+Maintaining and operating the complex machinery of war:
+- Enginseer, Mechanic, Technician, Maintenance Worker, Vehicle Mechanic, Weaponsmith, Armorer, Munitions Specialist, Explosives Expert, Construction Engineer, Structural Engineer, Electrical Engineer, Plasma Engineer, Generator Technician, Communications Technician, Tech-Adept, Servitor, Cybernetics Specialist
+
+#### Workers & Laborers (16 types)
+The industrial backbone supporting all operations:
+- Laborer, Miner, Construction Worker, Factory Worker, Refinery Worker, Quarry Worker, Lumberjack, Farmer, Harvester, Cargo Loader, Dock Worker, Warehouse Worker, Smelter, Forge Worker, Assembly Worker, Quality Inspector
+
+#### Administrators & Support (16 types)
+Managing logistics, records, and essential services:
+- Clerk, Administrator, Quartermaster, Supply Officer, Logistics Coordinator, Records Keeper, Accountant, Scribe, Archivist, Messenger, Courier, Cook, Chef, Supply Clerk, Inventory Manager, Diplomat, Interpreter
+
+#### Specialists (10+ types)
+Unique personnel with specialized abilities:
+- Navigator, Astropath, Sanctioned Psyker, Interrogator, Inquisitorial Acolyte, Adept Arbites, Enforcer, Communications Officer, Intelligence Officer
 
 ### Reinforcement Display
 
 The game aggregates reinforcements by type, showing:
 - Total units per type (automatically calculated and grouped)
-- Visual icons for each reinforcement type:
-  - **Imperial Guardsmen**: Groups icon
-  - **Heavy Weapons Team**: Fire department icon
-  - **Scout Squad**: Explore icon
-  - **Veteran Squad**: Military tech icon
-  - **Armored Support**: Security icon
+- Visual icons for each reinforcement type based on category:
+  - **Combat Units**: Military tech icon
+  - **Medical Personnel**: Healing icon
+  - **Scientists & Researchers**: Science icon
+  - **Engineers & Technicians**: Engineering icon
+  - **Workers & Laborers**: Work icon
+  - **Administrators & Support**: Business icon
+  - **Specialists**: Person icon
+  - **Vehicle Operators**: Security icon
+  - **Scouts**: Explore icon
+  - **Heavy Weapons**: Fire department icon
 - Reinforcement aggregation utilities calculate totals and organize by type
 
 ### Offline Reinforcements
@@ -410,25 +543,7 @@ The planetary map is procedurally generated using Voronoi-based region algorithm
 - **Threat Distribution**: Threat levels range from 1-8 for sectors with enemies
 - **Unique Sector Names**: Sectors are named using Imperial designation system (Alpha Sector, Beta Zone, etc.) or thematic Warhammer names (Nexus Point, Void Reach, Blood Fields, etc.)
 
-### Current Implementation Status
 
-**✅ Implemented:**
-- Interactive map display with terrain visualization
-- Enemy location markers with color coding
-- Threat level indicators
-- Hover information panels
-- Multiple map styles (Hex, Grid, Voronoi)
-- Map views with zoom controls
-- Resource information display
-- Procedural map generation
-
-**🚧 Planned Features:**
-- Scouting mission system
-- Warrior deployment interface
-- Combat resolution mechanics
-- Sector exploration/fog of war
-- Mission planning interface
-- Real-time enemy movement (future expansion)
 
 ### Strategic Map Usage
 
@@ -906,19 +1021,19 @@ Players will be able to invest resources in:
 - Major base upgrade completed
 - Successful defense against major assault
 
-### Planned Late Game (Ranks 21-30)
+### Planned Late Game (Ranks 31-50)
 **Focus:** Mastery, endgame content, prestige
 
 - Challenge the most dangerous enemies
 - Maximize resource efficiency
 - Perfect defense systems
 - Complete legendary missions
-- Achieve Emperor's Champion rank (Rank 30)
+- Achieve Emperor's Champion rank (Rank 50)
 
 **Planned Key Milestones:**
 - Rank 21 (General)
 - Rank 25 (Grand Marshal)
-- Rank 30 (Emperor's Champion)
+- Rank 50 (Emperor's Champion)
 - Defeat legendary bosses
 - Complete all mission types
 - Achieve maximum base development
@@ -963,7 +1078,7 @@ Players will be able to invest resources in:
    - Reset game button (with confirmation dialog)
    - Reset clears all localStorage, session data, and reloads the page
    - In-game documentation viewer (GameDocumentation component) with:
-     - Complete rank table with all 30 ranks
+     - Complete rank table with all 50 ranks
      - Reinforcement type descriptions with icons
      - Resource type explanations
      - Game mechanics overview
@@ -1054,7 +1169,7 @@ Once implemented, players must balance active play (to gain experience) with the
 
 ## Conclusion
 
-**Current State:** The Emperor's Call is currently an idle game focused on automatic resource generation and reinforcement accumulation. The foundation is in place with a complete rank system (30 ranks), persistence system, offline earnings, session management, and a fully interactive planetary map system showing terrain and enemy positions.
+**Current State:** The Emperor's Call is currently an idle game focused on automatic resource generation and reinforcement accumulation. The foundation is in place with a complete rank system (50 ranks), persistence system, offline earnings, session management, and a fully interactive planetary map system showing terrain and enemy positions.
 
 **Future Vision:** Once the combat and defense systems are implemented, The Emperor's Call will present a unique challenge: balance the glory of combat with the responsibility of command. Your rank will reflect not just your victories, but your ability to maintain the Emperor's presence on this hostile world. Every decision will matter, every battle will count, and every defeat will teach a harsh lesson.
 
@@ -1067,7 +1182,7 @@ Will you rise through the ranks to become the Emperor's Champion, or will the en
 ## Implementation Status Summary
 
 ### ✅ Implemented Features
-- **Rank System**: Complete 30-rank progression system with experience-based determination
+- **Rank System**: Complete 50-rank progression system with experience-based determination, featuring expanded low-level ranks for better early-game progression
 - **Resource Generation**: Automatic generation every 60 seconds based on rank multiplier
 - **Reinforcements**: Automatic arrival every 5 seconds with random types and unit counts
 - **Offline Earnings**: Resources and reinforcements continue while away

@@ -22,6 +22,7 @@ import { clearGameStateFromStorage, clearSession, saveGameStateToFile, loadGameS
 import { cleanupSessionManager } from '../utils/sessionManager';
 import { useCountdownTimer, formatTime } from '../hooks/useCountdownTimer';
 import { loadGame } from '../store/gameSlice';
+import { GameDocumentation } from './GameDocumentation';
 
 const RESOURCE_INTERVAL = 60000; // 60 seconds
 const REINFORCEMENT_INTERVAL = 5000; // 5 seconds
@@ -31,6 +32,7 @@ export const GameData: React.FC = () => {
   const gameState = useAppSelector((state) => state.game);
   const { gameStarted, player, planet, reinforcements, resources, sessionInfo } = gameState || {};
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [documentationDialogOpen, setDocumentationDialogOpen] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Calculate time until next resource generation (60 seconds)
@@ -150,6 +152,14 @@ export const GameData: React.FC = () => {
           The Emperor's Call
         </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            variant="outlined"
+            color="info"
+            onClick={() => setDocumentationDialogOpen(true)}
+            sx={{ minWidth: 120 }}
+          >
+            Documentation
+          </Button>
           <Button
             variant="outlined"
             color="primary"
@@ -336,6 +346,29 @@ export const GameData: React.FC = () => {
           </Paper>
         </Grid>
       </Grid>
+
+      {/* Documentation Dialog */}
+      <Dialog
+        open={documentationDialogOpen}
+        onClose={() => setDocumentationDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
+        aria-labelledby="documentation-dialog-title"
+      >
+        <DialogTitle id="documentation-dialog-title">
+          Game Documentation
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ maxHeight: '70vh', overflowY: 'auto', pr: 1 }}>
+            <GameDocumentation />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDocumentationDialogOpen(false)} color="primary" variant="contained">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Reset Game Confirmation Dialog */}
       <Dialog

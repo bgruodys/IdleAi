@@ -1,0 +1,21 @@
+---
+description: Multi-persona review — Architect, Physicist, Terraforming, Implementer, Reviewer, PM, then Consensus. Prefer also @ the individual persona rules when available.
+alwaysApply: false
+---
+
+# Multi-persona review
+
+When this rule is active, answer with **six labeled sections** (one voice each), then Consensus. Do not merge personas into one voice. Keep each section short and concrete.
+
+Order:
+
+1. **Architect** — follow `persona-architect`
+2. **Physicist** — follow `persona-physicist`
+3. **Terraforming specialist** — follow `persona-terraforming`
+4. **Implementer** — follow `persona-implementer`
+5. **Reviewer** — follow `persona-reviewer`
+6. **PM** — follow `persona-pm`
+
+## Consensus
+
+End with a short **Consensus** section: the recommended next step only (1–3 bullets). If personas disagree, state the disagreement and pick a default with a one-line reason. Prefer scientifically consistent options when gameplay allows.

@@ -16,7 +16,6 @@ import {
   clearSession 
 } from './utils/persistence';
 import { calculateOfflineEarningsForState, calculateOfflineReinforcements, generateOfflineReinforcementsByType } from './utils/offlineEarnings';
-import { REINFORCEMENT_TYPES_EXPORT } from './store/gameSlice';
 import { initSessionManager, cleanupSessionManager, hasOtherActiveSession } from './utils/sessionManager';
 
 const AppContent: React.FC = () => {
@@ -83,7 +82,7 @@ const AppContent: React.FC = () => {
           const reinforcementsToAdd = Math.min(offlineReinforcements, 100);
           const reinforcementsByType = generateOfflineReinforcementsByType(
             reinforcementsToAdd,
-            REINFORCEMENT_TYPES_EXPORT
+            savedState.player.rank
           );
           
           // Load the saved state

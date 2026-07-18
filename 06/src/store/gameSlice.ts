@@ -46,11 +46,166 @@ export interface GameState {
 
 // Constants
 export const REINFORCEMENT_TYPES_EXPORT = [
-  'Imperial Guardsmen',
-  'Heavy Weapons Team',
-  'Scout Squad',
-  'Veteran Squad',
-  'Armored Support',
+  // Combat Units
+  'Imperial Guardsman',
+  'Heavy Weapons Specialist',
+  'Sniper',
+  'Commissar',
+  'Stormtrooper',
+  'Veteran Guardsman',
+  'Scout',
+  'Forward Scout',
+  'Reconnaissance Scout',
+  'Pathfinder',
+  'Stealth Scout',
+  'Urban Scout',
+  'Desert Scout',
+  'Jungle Scout',
+  'Arctic Scout',
+  'Mountain Scout',
+  'Combat Scout',
+  'Elite Scout',
+  'Veteran Scout',
+  'Scout Sniper',
+  'Scout Marksman',
+  'Scout Observer',
+  'Scout Infiltrator',
+  'Scout Saboteur',
+  'Grenadier',
+  'Flamer Specialist',
+  'Plasma Gunner',
+  'Melta Gunner',
+  'Lasgun Trooper',
+  'Autogun Trooper',
+  'Shotgun Trooper',
+  'Bayonet Fighter',
+  'Close Combat Specialist',
+  'Sergeant',
+  'Corporal',
+  'Officer',
+  'Tank Commander',
+  'Artillery Crewman',
+  'Mortar Operator',
+  'Missile Launcher Operator',
+  'Heavy Bolter Gunner',
+  'Lascannon Operator',
+  'Autocannon Gunner',
+  'Ratling Sniper',
+  'Ogryn',
+  'Bullgryn',
+  'Rough Rider',
+  'Cavalry Trooper',
+  'Valkyrie Pilot',
+  'Valkyrie Gunner',
+  'Chimera Driver',
+  'Leman Russ Driver',
+  'Baneblade Crewman',
+  'Sentinel Pilot',
+  'Basilisk Crewman',
+  'Manticore Operator',
+  'Hydra Gunner',
+  
+  // Medical Personnel
+  'Medicae',
+  'Field Surgeon',
+  'Apothecary',
+  'Field Medic',
+  'Combat Medic',
+  'Trauma Surgeon',
+  'Biologis Medicae',
+  'Sanctioned Psyker Healer',
+  'Medical Orderly',
+  'Pharmaceutical Specialist',
+  
+  // Scientists & Researchers
+  'Tech-Priest',
+  'Biologis',
+  'Chemist',
+  'Researcher',
+  'Xenobiologist',
+  'Archaeologist',
+  'Analyst',
+  'Data Specialist',
+  'Laboratory Technician',
+  'Research Assistant',
+  'Xenologist',
+  'Genetor',
+  'Magos Biologis',
+  'Magos Physic',
+  'Explorator',
+  'Archmagos',
+  
+  // Engineers & Technicians
+  'Enginseer',
+  'Mechanic',
+  'Technician',
+  'Maintenance Worker',
+  'Vehicle Mechanic',
+  'Weaponsmith',
+  'Armorer',
+  'Munitions Specialist',
+  'Explosives Expert',
+  'Construction Engineer',
+  'Structural Engineer',
+  'Electrical Engineer',
+  'Plasma Engineer',
+  'Generator Technician',
+  'Communications Technician',
+  'Tech-Adept',
+  'Servitor',
+  'Cybernetics Specialist',
+  
+  // Workers & Laborers
+  'Laborer',
+  'Miner',
+  'Construction Worker',
+  'Factory Worker',
+  'Refinery Worker',
+  'Quarry Worker',
+  'Lumberjack',
+  'Farmer',
+  'Harvester',
+  'Cargo Loader',
+  'Dock Worker',
+  'Warehouse Worker',
+  'Smelter',
+  'Forge Worker',
+  'Assembly Worker',
+  'Quality Inspector',
+  
+  // Administrators & Support
+  'Clerk',
+  'Administrator',
+  'Quartermaster',
+  'Supply Officer',
+  'Logistics Coordinator',
+  'Records Keeper',
+  'Accountant',
+  'Scribe',
+  'Archivist',
+  'Messenger',
+  'Courier',
+  'Cook',
+  'Chef',
+  'Supply Clerk',
+  'Inventory Manager',
+  
+  // Specialists
+  'Navigator',
+  'Astropath',
+  'Sanctioned Psyker',
+  'Interrogator',
+  'Inquisitorial Acolyte',
+  'Adept Arbites',
+  'Enforcer',
+  'Scout Driver',
+  'Pilot',
+  'Co-Pilot',
+  'Gunner',
+  'Communications Officer',
+  'Intelligence Officer',
+  'Interpreter',
+  'Diplomat',
 ];
 
 export interface RankData {
@@ -62,41 +217,219 @@ export interface RankData {
 }
 
 export const RANK_DATA_EXPORT: RankData[] = [
+  // Entry Level (Ranks 1-10) - Very low XP requirements for frequent early progression
   { rank: 1, title: 'Recruit', experienceRequired: 0, multiplier: 1.00, description: 'Fresh from the training grounds' },
-  { rank: 2, title: 'Guardsman', experienceRequired: 100, multiplier: 1.15, description: 'Proven yourself in basic combat' },
-  { rank: 3, title: 'Veteran Guardsman', experienceRequired: 250, multiplier: 1.30, description: 'Experienced in planetary warfare' },
-  { rank: 4, title: 'Corporal', experienceRequired: 500, multiplier: 1.45, description: 'First step into leadership' },
-  { rank: 5, title: 'Sergeant', experienceRequired: 1000, multiplier: 1.60, description: 'Leading small squads effectively' },
-  { rank: 6, title: 'Staff Sergeant', experienceRequired: 1750, multiplier: 1.75, description: 'Senior non-commissioned officer' },
-  { rank: 7, title: 'Master Sergeant', experienceRequired: 2750, multiplier: 1.90, description: 'Elite squad leadership' },
-  { rank: 8, title: 'Sergeant Major', experienceRequired: 4000, multiplier: 2.05, description: 'Highest enlisted rank' },
-  { rank: 9, title: 'Warrant Officer', experienceRequired: 5500, multiplier: 2.20, description: 'Specialized technical expertise' },
-  { rank: 10, title: 'Chief Warrant Officer', experienceRequired: 7500, multiplier: 2.35, description: 'Master of specialized fields' },
-  { rank: 11, title: 'Second Lieutenant', experienceRequired: 10000, multiplier: 2.50, description: 'First commissioned officer rank' },
-  { rank: 12, title: 'Lieutenant', experienceRequired: 13500, multiplier: 2.65, description: 'Commanding platoon-level operations' },
-  { rank: 13, title: 'First Lieutenant', experienceRequired: 18000, multiplier: 2.80, description: 'Senior platoon commander' },
-  { rank: 14, title: 'Captain', experienceRequired: 24000, multiplier: 2.95, description: 'Battalion leadership achieved' },
-  { rank: 15, title: 'Major', experienceRequired: 32000, multiplier: 3.10, description: 'Regimental command authority' },
-  { rank: 16, title: 'Lieutenant Colonel', experienceRequired: 42000, multiplier: 3.25, description: 'Battalion command' },
-  { rank: 17, title: 'Colonel', experienceRequired: 55000, multiplier: 3.40, description: 'Brigade-level strategic planning' },
-  { rank: 18, title: 'Brigadier General', experienceRequired: 72000, multiplier: 3.55, description: 'Brigade command' },
-  { rank: 19, title: 'Major General', experienceRequired: 95000, multiplier: 3.70, description: 'Division command' },
-  { rank: 20, title: 'Lieutenant General', experienceRequired: 125000, multiplier: 3.85, description: 'Corps command' },
-  { rank: 21, title: 'General', experienceRequired: 165000, multiplier: 4.00, description: 'Planetary theater command' },
-  { rank: 22, title: 'Lord General', experienceRequired: 220000, multiplier: 4.15, description: "The Emperor's chosen commander" },
-  { rank: 23, title: 'Warmaster', experienceRequired: 300000, multiplier: 4.30, description: 'Supreme military commander' },
-  { rank: 24, title: 'High Marshal', experienceRequired: 400000, multiplier: 4.45, description: 'Master of multiple theaters' },
-  { rank: 25, title: 'Grand Marshal', experienceRequired: 550000, multiplier: 4.60, description: 'Imperial military council member' },
-  { rank: 26, title: 'Lord Marshal', experienceRequired: 750000, multiplier: 4.75, description: 'Sector-wide command authority' },
-  { rank: 27, title: 'Imperial Marshal', experienceRequired: 1000000, multiplier: 4.90, description: 'Regional command of multiple sectors' },
-  { rank: 28, title: 'Supreme Marshal', experienceRequired: 1350000, multiplier: 5.05, description: "One of the Emperor's finest" },
-  { rank: 29, title: 'Marshal of the Imperium', experienceRequired: 1800000, multiplier: 5.20, description: 'Legendary commander' },
-  { rank: 30, title: "Emperor's Champion", experienceRequired: 2500000, multiplier: 5.35, description: 'The ultimate honor, chosen by the Emperor Himself' },
+  { rank: 2, title: 'Trainee', experienceRequired: 5, multiplier: 1.15, description: 'Learning the basics of Imperial service' },
+  { rank: 3, title: 'Cadet', experienceRequired: 12, multiplier: 1.30, description: 'Completed initial training phase' },
+  { rank: 4, title: 'Private', experienceRequired: 25, multiplier: 1.45, description: 'First assignment to active duty' },
+  { rank: 5, title: 'Guardsman', experienceRequired: 45, multiplier: 1.60, description: 'Proven yourself in basic combat' },
+  { rank: 6, title: 'Experienced Guardsman', experienceRequired: 75, multiplier: 1.75, description: 'Survived your first engagements' },
+  { rank: 7, title: 'Battle-Tested Guardsman', experienceRequired: 115, multiplier: 1.90, description: 'Multiple successful missions completed' },
+  { rank: 8, title: 'Veteran Guardsman', experienceRequired: 170, multiplier: 2.05, description: 'Experienced in planetary warfare' },
+  { rank: 9, title: 'Hardened Guardsman', experienceRequired: 240, multiplier: 2.20, description: 'Seen combat across multiple battlefields' },
+  { rank: 10, title: 'Elite Guardsman', experienceRequired: 330, multiplier: 2.35, description: 'Among the finest rank-and-file soldiers' },
+  
+  // Junior NCO (Ranks 11-20) - Leadership begins
+  { rank: 11, title: 'Lance Corporal', experienceRequired: 440, multiplier: 2.50, description: 'First step into leadership responsibilities' },
+  { rank: 12, title: 'Corporal', experienceRequired: 580, multiplier: 2.65, description: 'Leading small fire teams' },
+  { rank: 13, title: 'Senior Corporal', experienceRequired: 750, multiplier: 2.80, description: 'Proven leadership in combat' },
+  { rank: 14, title: 'Acting Sergeant', experienceRequired: 960, multiplier: 2.95, description: 'Temporary squad leadership' },
+  { rank: 15, title: 'Sergeant', experienceRequired: 1210, multiplier: 3.10, description: 'Leading small squads effectively' },
+  { rank: 16, title: 'Sergeant First Class', experienceRequired: 1510, multiplier: 3.25, description: 'Senior squad leader' },
+  { rank: 17, title: 'Staff Sergeant', experienceRequired: 1870, multiplier: 3.40, description: 'Senior non-commissioned officer' },
+  { rank: 18, title: 'Gunnery Sergeant', experienceRequired: 2300, multiplier: 3.55, description: 'Specialized weapons and tactics expert' },
+  { rank: 19, title: 'Master Sergeant', experienceRequired: 2810, multiplier: 3.70, description: 'Elite squad leadership' },
+  { rank: 20, title: 'First Sergeant', experienceRequired: 3410, multiplier: 3.85, description: 'Company-level senior NCO' },
+  
+  // Senior NCO (Ranks 21-30) - High-level enlisted leadership
+  { rank: 21, title: 'Sergeant Major', experienceRequired: 4110, multiplier: 4.00, description: 'Highest enlisted rank' },
+  { rank: 22, title: 'Command Sergeant Major', experienceRequired: 4930, multiplier: 4.15, description: 'Battalion-level senior enlisted advisor' },
+  { rank: 23, title: 'Regimental Sergeant Major', experienceRequired: 5880, multiplier: 4.30, description: 'Regiment-level senior enlisted' },
+  { rank: 24, title: 'Warrant Officer', experienceRequired: 6980, multiplier: 4.45, description: 'Specialized technical expertise' },
+  { rank: 25, title: 'Chief Warrant Officer', experienceRequired: 8250, multiplier: 4.60, description: 'Master of specialized fields' },
+  { rank: 26, title: 'Senior Chief Warrant Officer', experienceRequired: 9720, multiplier: 4.75, description: 'Elite technical specialist' },
+  { rank: 27, title: 'Master Chief Warrant Officer', experienceRequired: 11420, multiplier: 4.90, description: 'Supreme technical authority' },
+  { rank: 28, title: 'Second Lieutenant', experienceRequired: 13380, multiplier: 5.05, description: 'First commissioned officer rank' },
+  { rank: 29, title: 'First Lieutenant', experienceRequired: 15630, multiplier: 5.20, description: 'Platoon command authority' },
+  { rank: 30, title: 'Lieutenant', experienceRequired: 18200, multiplier: 5.35, description: 'Commanding platoon-level operations' },
+  
+  // Junior Officers (Ranks 31-40) - Commissioned officer ranks
+  { rank: 31, title: 'Senior Lieutenant', experienceRequired: 21130, multiplier: 5.50, description: 'Experienced platoon commander' },
+  { rank: 32, title: 'Captain', experienceRequired: 24460, multiplier: 5.65, description: 'Company command achieved' },
+  { rank: 33, title: 'Senior Captain', experienceRequired: 28240, multiplier: 5.80, description: 'Veteran company commander' },
+  { rank: 34, title: 'Major', experienceRequired: 32520, multiplier: 5.95, description: 'Battalion leadership achieved' },
+  { rank: 35, title: 'Lieutenant Colonel', experienceRequired: 37360, multiplier: 6.10, description: 'Battalion command' },
+  { rank: 36, title: 'Colonel', experienceRequired: 42820, multiplier: 6.25, description: 'Regimental command authority' },
+  { rank: 37, title: 'Senior Colonel', experienceRequired: 48970, multiplier: 6.40, description: 'Elite regimental commander' },
+  { rank: 38, title: 'Brigadier General', experienceRequired: 55880, multiplier: 6.55, description: 'Brigade command' },
+  { rank: 39, title: 'Major General', experienceRequired: 63620, multiplier: 6.70, description: 'Division command' },
+  { rank: 40, title: 'Lieutenant General', experienceRequired: 72270, multiplier: 6.85, description: 'Corps command' },
+  
+  // Senior Officers (Ranks 41-50) - High command
+  { rank: 41, title: 'General', experienceRequired: 81920, multiplier: 7.00, description: 'Planetary theater command' },
+  { rank: 42, title: 'Lord General', experienceRequired: 92660, multiplier: 7.15, description: "The Emperor's chosen commander" },
+  { rank: 43, title: 'Warmaster', experienceRequired: 104600, multiplier: 7.30, description: 'Supreme military commander' },
+  { rank: 44, title: 'High Marshal', experienceRequired: 118160, multiplier: 7.45, description: 'Master of multiple theaters' },
+  { rank: 45, title: 'Grand Marshal', experienceRequired: 133380, multiplier: 7.60, description: 'Imperial military council member' },
+  { rank: 46, title: 'Lord Marshal', experienceRequired: 150400, multiplier: 7.75, description: 'Sector-wide command authority' },
+  { rank: 47, title: 'Imperial Marshal', experienceRequired: 169370, multiplier: 7.90, description: 'Regional command of multiple sectors' },
+  { rank: 48, title: 'Supreme Marshal', experienceRequired: 190450, multiplier: 8.05, description: "One of the Emperor's finest" },
+  { rank: 49, title: 'Marshal of the Imperium', experienceRequired: 213810, multiplier: 8.20, description: 'Legendary commander' },
+  { rank: 50, title: "Emperor's Champion", experienceRequired: 239630, multiplier: 8.35, description: 'The ultimate honor, chosen by the Emperor Himself' },
 ];
 
 // Utility functions
 export function getRankMultiplier(rank: number): number {
   return 1.0 + (rank - 1) * 0.15;
+}
+
+/**
+ * Determine if a unit type is an Infantry unit (should have higher weight)
+ */
+function isInfantryUnit(type: string): boolean {
+  const lowerType = type.toLowerCase();
+  return lowerType.includes('guardsman') || 
+         lowerType.includes('trooper') || 
+         lowerType.includes('grenadier') ||
+         lowerType.includes('bayonet fighter') ||
+         lowerType.includes('close combat specialist') ||
+         (lowerType.includes('sniper') && !lowerType.includes('scout') && !lowerType.includes('ratling'));
+}
+
+/**
+ * Determine if a unit type is a Scout unit (should have lower weight)
+ */
+function isScoutUnit(type: string): boolean {
+  const lowerType = type.toLowerCase();
+  return lowerType.includes('scout') || 
+         lowerType.includes('pathfinder') || 
+         lowerType.includes('observer') ||
+         lowerType.includes('infiltrator') ||
+         lowerType.includes('saboteur') ||
+         lowerType.includes('reconnaissance');
+}
+
+/**
+ * Get weighted random reinforcement type
+ * Infantry units have 10x weight compared to scouts
+ */
+function getWeightedRandomType(availableTypes: string[]): string {
+  // Build weighted array: Infantry = 10, Scouts = 1, Others = 1
+  const weightedArray: string[] = [];
+  
+  for (const type of availableTypes) {
+    if (isInfantryUnit(type)) {
+      // Add infantry 10 times
+      for (let i = 0; i < 10; i++) {
+        weightedArray.push(type);
+      }
+    } else if (isScoutUnit(type)) {
+      // Add scout once
+      weightedArray.push(type);
+    } else {
+      // Add other units once
+      weightedArray.push(type);
+    }
+  }
+  
+  // Randomly select from weighted array
+  return weightedArray[Math.floor(Math.random() * weightedArray.length)];
+}
+
+/**
+ * Get available reinforcement types based on player rank
+ * Entry Level (Ranks 1-10): Only Imperial Guardsman and Scout
+ * Higher ranks gradually unlock more types
+ */
+export function getAvailableReinforcementTypes(rank: number): string[] {
+  // Entry Level (Ranks 1-10): Only basic units
+  if (rank <= 10) {
+    return ['Imperial Guardsman', 'Scout'];
+  }
+  
+  // Junior NCO (Ranks 11-20): Add basic combat units and more scout types
+  if (rank <= 20) {
+    return [
+      'Imperial Guardsman',
+      'Scout',
+      'Forward Scout',
+      'Reconnaissance Scout',
+      'Veteran Guardsman',
+      'Lasgun Trooper',
+      'Autogun Trooper',
+      'Shotgun Trooper',
+      'Grenadier',
+      'Sniper',
+      'Medicae',
+      'Field Medic',
+      'Laborer',
+      'Miner',
+      'Clerk',
+    ];
+  }
+  
+  // Senior NCO (Ranks 21-30): Add specialists and support units
+  if (rank <= 30) {
+    return [
+      ...getAvailableReinforcementTypes(20), // Include previous tier
+      'Heavy Weapons Specialist',
+      'Flamer Specialist',
+      'Plasma Gunner',
+      'Melta Gunner',
+      'Pathfinder',
+      'Stealth Scout',
+      'Urban Scout',
+      'Desert Scout',
+      'Jungle Scout',
+      'Combat Scout',
+      'Sergeant',
+      'Corporal',
+      'Field Surgeon',
+      'Combat Medic',
+      'Enginseer',
+      'Mechanic',
+      'Technician',
+      'Construction Worker',
+      'Factory Worker',
+      'Administrator',
+      'Quartermaster',
+    ];
+  }
+  
+  // Junior Officers (Ranks 31-40): Add elite units and vehicles
+  if (rank <= 40) {
+    return [
+      ...getAvailableReinforcementTypes(30), // Include previous tier
+      'Stormtrooper',
+      'Commissar',
+      'Elite Scout',
+      'Veteran Scout',
+      'Scout Sniper',
+      'Scout Marksman',
+      'Arctic Scout',
+      'Mountain Scout',
+      'Close Combat Specialist',
+      'Officer',
+      'Artillery Crewman',
+      'Mortar Operator',
+      'Heavy Bolter Gunner',
+      'Lascannon Operator',
+      'Apothecary',
+      'Trauma Surgeon',
+      'Tech-Priest',
+      'Biologis',
+      'Researcher',
+      'Vehicle Mechanic',
+      'Weaponsmith',
+      'Armorer',
+      'Refinery Worker',
+      'Supply Officer',
+      'Logistics Coordinator',
+    ];
+  }
+  
+  // Senior Officers (Ranks 41-50): All units available
+  return REINFORCEMENT_TYPES_EXPORT;
 }
 
 export function calculateOfflineEarnings(
@@ -218,9 +551,12 @@ const gameSlice = createSlice({
       }
     },
     addReinforcement: (state) => {
-      if (!state.gameStarted) return;
+      if (!state.gameStarted || !state.player) return;
       
-      const type = REINFORCEMENT_TYPES_EXPORT[Math.floor(Math.random() * REINFORCEMENT_TYPES_EXPORT.length)];
+      // Get available types based on rank
+      const availableTypes = getAvailableReinforcementTypes(state.player.rank);
+      // Use weighted random selection (Infantry 10x more likely than Scouts)
+      const type = getWeightedRandomType(availableTypes);
       const unitCount = Math.floor(Math.random() * 10) + 1;
       const now = Date.now();
       

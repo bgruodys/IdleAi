@@ -1,4 +1,57 @@
-import { GameState, calculateOfflineEarnings, Resources } from '../store/gameSlice';
+import { GameState, calculateOfflineEarnings, Resources, getAvailableReinforcementTypes } from '../store/gameSlice';
+
+/**
+ * Determine if a unit type is an Infantry unit (should have higher weight)
+ */
+function isInfantryUnit(type: string): boolean {
+  const lowerType = type.toLowerCase();
+  return lowerType.includes('guardsman') || 
+         lowerType.includes('trooper') || 
+         lowerType.includes('grenadier') ||
+         lowerType.includes('bayonet fighter') ||
+         lowerType.includes('close combat specialist') ||
+         (lowerType.includes('sniper') && !lowerType.includes('scout') && !lowerType.includes('ratling'));
+}
+
+/**
+ * Determine if a unit type is a Scout unit (should have lower weight)
+ */
+function isScoutUnit(type: string): boolean {
+  const lowerType = type.toLowerCase();
+  return lowerType.includes('scout') || 
+         lowerType.includes('pathfinder') || 
+         lowerType.includes('observer') ||
+         lowerType.includes('infiltrator') ||
+         lowerType.includes('saboteur') ||
+         lowerType.includes('reconnaissance');
+}
+
+/**
+ * Get weighted random reinforcement type
+ * Infantry units have 10x weight compared to scouts
+ */
+function getWeightedRandomType(availableTypes: string[]): string {
+  // Build weighted array: Infantry = 10, Scouts = 1, Others = 1
+  const weightedArray: string[] = [];
+  
+  for (const type of availableTypes) {
+    if (isInfantryUnit(type)) {
+      // Add infantry 10 times
+      for (let i = 0; i < 10; i++) {
+        weightedArray.push(type);
+      }
+    } else if (isScoutUnit(type)) {
+      // Add scout once
+      weightedArray.push(type);
+    } else {
+      // Add other units once
+      weightedArray.push(type);
+    }
+  }
+  
+  // Randomly select from weighted array
+  return weightedArray[Math.floor(Math.random() * weightedArray.length)];
+}
 
 const BASE_RATES = {
   credits: 100,
@@ -60,12 +113,16 @@ export function calculateOfflineReinforcements(
 /**
  * Generate offline reinforcements and track them by type
  * This simulates what would have been generated offline
+ * Uses rank-based filtering to determine available types
  */
 export function generateOfflineReinforcementsByType(
   count: number,
-  reinforcementTypes: string[]
+  rank: number
 ): Map<string, { count: number; totalUnits: number }> {
   const byType = new Map<string, { count: number; totalUnits: number }>();
+  
+  // Get available types based on rank
+  const availableTypes = getAvailableReinforcementTypes(rank);
   
   // Helper to get random element
   const getRandomElement = <T,>(array: T[]): T => {
@@ -73,7 +130,8 @@ export function generateOfflineReinforcementsByType(
   };
   
   for (let i = 0; i < count; i++) {
-    const type = getRandomElement(reinforcementTypes);
+    // Use weighted random selection (Infantry 10x more likely than Scouts)
+    const type = getWeightedRandomType(availableTypes);
     const unitCount = Math.floor(Math.random() * 10) + 1;
     
     const existing = byType.get(type);
